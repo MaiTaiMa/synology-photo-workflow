@@ -1,0 +1,4 @@
+PyYAML>=6.0,<7
+numpy>=1.26,<3
+Pillow>=10,<12
+# Optional: face-recognition>=1.3.0 (architecture-dependent; family feature degrades safely)

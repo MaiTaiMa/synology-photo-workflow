@@ -1,0 +1,19 @@
+services:
+  photo-workflow:
+    build: .
+    image: synology-photo-workflow:7.1.0
+    user: "${PUID:?Set PUID}:${PGID:?Set PGID}"
+    volumes:
+      - ${WORKFLOW_DATA_ROOT:?Set WORKFLOW_DATA_ROOT}:/workspace/data:rw
+      - ./config:/workspace/config:ro
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      HOME: /tmp
+      PYTHONDONTWRITEBYTECODE: "1"
+    restart: "no"

@@ -1,0 +1,172 @@
+{
+  "schemaversion": 1,
+  "createdat": "2026-07-27T14:07:45Z",
+  "scope": "package-0-baseline",
+  "python": "3.12",
+  "commands": [
+    {
+      "command": "python -m compileall -q app",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "python -m pytest -q tests",
+      "returncode": 1,
+      "stdout": "\u001b[31mF\u001b[0m\u001b[32m.\u001b[0m\u001b[31m                                                                       [100%]\u001b[0m\n=================================== FAILURES ===================================\n\u001b[31m\u001b[1m_______________________________ test_manual_flow _______________________________\u001b[0m\n\ntmp_path = PosixPath('/tmp/pytest-of-root/pytest-3/test_manual_flow0')\n\n    \u001b[0m\u001b[94mdef\u001b[39;49;00m\u001b[90m \u001b[39;49;00m\u001b[92mtest_manual_flow\u001b[39;49;00m(tmp_path):\u001b[90m\u001b[39;49;00m\n     c=config(tmp_path);src=Path(c[\u001b[33m'\u001b[39;49;00m\u001b[33mpaths\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m][\u001b[33m'\u001b[39;49;00m\u001b[33mtempsd\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m])/\u001b[33m'\u001b[39;49;00m\u001b[33m20250707\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m;src.mkdir(parents=\u001b[94mTrue\u001b[39;49;00m);jpg(src/\u001b[33m'\u001b[39;49;00m\u001b[33ma.jpg\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m);jpg(src/\u001b[33m'\u001b[39;49;00m\u001b[33mb.jpg\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m);(src/\u001b[33m'\u001b[39;49;00m\u001b[33ma.ARW\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m).write_bytes(\u001b[33mb\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m\u001b[33mraw-a\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m);(src/\u001b[33m'\u001b[39;49;00m\u001b[33mb.ARW\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m).write_bytes(\u001b[33mb\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m\u001b[33mraw-b\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n>    phase1(c);d=Path(c[\u001b[33m'\u001b[39;49;00m\u001b[33mpaths\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m][\u001b[33m'\u001b[39;49;00m\u001b[33mtempimages\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m])/\u001b[33m'\u001b[39;49;00m\u001b[33m2025-07-07\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m;\u001b[94massert\u001b[39;49;00m (d/\u001b[33m'\u001b[39;49;00m\u001b[33mSAVE/culling_scores.csv\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m).exists()\u001b[90m\u001b[39;49;00m\n\n\u001b[1m\u001b[31mtests/test_v7.py\u001b[0m:11: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\u001b[1m\u001b[31mapp/photoworkflow.py\u001b[0m:94: in phase1\n    \u001b[0mmove(d,target);transition(state,\u001b[33m'\u001b[39;49;00m\u001b[33mautomatichandoff\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m \u001b[94mif\u001b[39;49;00m automatic \u001b[94melse\u001b[39;49;00m \u001b[33m'\u001b[39;49;00m\u001b[33mphase1completed\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m,batchid=bid,sourcefolder=name,currentpath=\u001b[96mstr\u001b[39;49;00m(target),fingerprint=fp,manifesthash=manifest[\u001b[33m'\u001b[39;49;00m\u001b[33mmanifesthash\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m],configfingerprint=configfingerprint(c),modelversion=c[\u001b[33m'\u001b[39;49;00m\u001b[33mmodels\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m][\u001b[33m'\u001b[39;49;00m\u001b[33mversion\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m]);out.append({\u001b[33m'\u001b[39;49;00m\u001b[33mbatchid\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:bid,\u001b[33m'\u001b[39;49;00m\u001b[33mpath\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:\u001b[96mstr\u001b[39;49;00m(target),\u001b[33m'\u001b[39;49;00m\u001b[33mhandoff\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:\u001b[33m'\u001b[39;49;00m\u001b[33mautomatic\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m \u001b[94mif\u001b[39;49;00m automatic \u001b[94melse\u001b[39;49;00m \u001b[33m'\u001b[39;49;00m\u001b[33mmanualreview\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m})\u001b[90m\u001b[39;49;00m\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nstate_path = PosixPath('/tmp/pytest-of-root/pytest-3/test_manual_flow0/data/runtime/state/20250707-be1d608f.json')\nnext_state = 'phase1completed'\nextra = {'batchid': '20250707-be1d608f', 'configfingerprint': '5a4488f0a02ac54f0c280207ca32333556e8c7a133b7373106a621dbcf33b77...ta/TEMP/TEMPIMAGES/2025-07-07', 'fingerprint': 'be1d608ffe930617fe7307da20f9c6b1be54e639242cf74da28772deac0e745f', ...}\np = PosixPath('/tmp/pytest-of-root/pytest-3/test_manual_flow0/data/runtime/state/20250707-be1d608f.json')\nold = None\n\n    \u001b[0m\u001b[94mdef\u001b[39;49;00m\u001b[90m \u001b[39;49;00m\u001b[92mtransition\u001b[39;49;00m(state_path,next_state,**extra):\u001b[90m\u001b[39;49;00m\n     p=Path(state_path);old=json.loads(p.read_text()) \u001b[94mif\u001b[39;49;00m p.exists() \u001b[94melse\u001b[39;49;00m \u001b[94mNone\u001b[39;49;00m\u001b[90m\u001b[39;49;00m\n     \u001b[94mif\u001b[39;49;00m old:\u001b[90m\u001b[39;49;00m\n      current=old[\u001b[33m'\u001b[39;49;00m\u001b[33mstate\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m]\u001b[90m\u001b[39;49;00m\n      \u001b[94mif\u001b[39;49;00m current==next_state:\u001b[94mreturn\u001b[39;49;00m old\u001b[90m\u001b[39;49;00m\n      \u001b[94mif\u001b[39;49;00m ORDER.index(next_state)<ORDER.index(current):\u001b[94mraise\u001b[39;49;00m \u001b[96mValueError\u001b[39;49;00m(\u001b[33m'\u001b[39;49;00m\u001b[33mSTATEBACKWARD\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n      \u001b[94mif\u001b[39;49;00m current==\u001b[33m'\u001b[39;49;00m\u001b[33mphase2completed\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:\u001b[94mraise\u001b[39;49;00m \u001b[96mValueError\u001b[39;49;00m(\u001b[33m'\u001b[39;49;00m\u001b[33mSTATECOMPLETED\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m)\u001b[90m\u001b[39;49;00m\n>    data={\u001b[33m'\u001b[39;49;00m\u001b[33mschemaversion\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:SCHEMA,\u001b[33m'\u001b[39;49;00m\u001b[33mstate\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:next_state,\u001b[33m'\u001b[39;49;00m\u001b[33mupdatedat\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:utcnow,\u001b[33m'\u001b[39;49;00m\u001b[33mhistory\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:(old.get(\u001b[33m'\u001b[39;49;00m\u001b[33mhistory\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m,[])+[{\u001b[33m'\u001b[39;49;00m\u001b[33mstate\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:next_state,\u001b[33m'\u001b[39;49;00m\u001b[33mat\u001b[39;49;00m\u001b[33m'\u001b[39;49;00m:utcnow}])}\u001b[90m\u001b[39;49;00m\n\u001b[1m\u001b[31mE    AttributeError: 'NoneType' object has no attribute 'get'\u001b[0m\n\n\u001b[1m\u001b[31mapp/state.py\u001b[0m:27: AttributeError\n\u001b[36m\u001b[1m=========================== short test summary info ============================\u001b[0m\n\u001b[31mFAILED\u001b[0m tests/test_v7.py::\u001b[1mtest_manual_flow\u001b[0m - AttributeError: 'NoneType' object has no attribute 'get'\n\u001b[31m\u001b[31m\u001b[1m1 failed\u001b[0m, \u001b[32m1 passed\u001b[0m\u001b[31m in 0.22s\u001b[0m\u001b[0m\n",
+      "stderr": ""
+    }
+  ],
+  "inventory": [
+    {
+      "path": ".dockerignore",
+      "bytes": 64,
+      "sha256": "874389847baa27c06096cc8b0d191abf34c02bb31a47e30d179f194d8e6b2e42"
+    },
+    {
+      "path": "Dockerfile",
+      "bytes": 597,
+      "sha256": "fe8e160ea1818342c1e547e0ad8734df86632859d646da477d102071f777e77e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1605,
+      "sha256": "f6437d608a1a6b4223323b8741e0df4ab80b4b911e083421603534fc067c2bd5"
+    },
+    {
+      "path": "app/__init__.py",
+      "bytes": 22,
+      "sha256": "27e8febb48ada44153ea2add9969a2c50a9831a74d9755fdd53c549a888b1cc2"
+    },
+    {
+      "path": "app/aesthetic.py",
+      "bytes": 3744,
+      "sha256": "f2e4bfc8052ca862d2c89094bc777011bf51d908eaeb60005593dcdfd569bdbf"
+    },
+    {
+      "path": "app/calibration.py",
+      "bytes": 3554,
+      "sha256": "21d0aa1d636f762a7f9b8ee679e88821e66911488bf3493df70be2c1d001d780"
+    },
+    {
+      "path": "app/familyrecognition.py",
+      "bytes": 1650,
+      "sha256": "57e2b9a78a44396cfded36925a6b95aaaba24fb8358b99ce732630bc491c613c"
+    },
+    {
+      "path": "app/metadatarating.py",
+      "bytes": 376,
+      "sha256": "1c6214d81a1b6e769462648321b45a3d9c6659794c76602039f9c5abdd29837c"
+    },
+    {
+      "path": "app/metadatawriter.py",
+      "bytes": 1242,
+      "sha256": "16751a52bbfbd6efae2d8f45b6b8801bc25b829fbc87d48be4849c384f948401"
+    },
+    {
+      "path": "app/photoworkflow.py",
+      "bytes": 14075,
+      "sha256": "c5caf0f52478ea860189700721ac95400c4ec230f0254afe524cd31affb57fd0"
+    },
+    {
+      "path": "app/safety.py",
+      "bytes": 1445,
+      "sha256": "d80bda6b20bc3e4edef0df862ecf1b76585332539de7f56735e1d1a6b8505637"
+    },
+    {
+      "path": "app/samples.py",
+      "bytes": 1495,
+      "sha256": "8c069aaf2521cb223b02d3c4051afe974aa7d80fd9f2c02d0ad8e260c6ecb9be"
+    },
+    {
+      "path": "app/seriesculling.py",
+      "bytes": 1936,
+      "sha256": "a676fa456fd4d9c51fb516440857821c1c07b4bace0e642805ed836452742ebe"
+    },
+    {
+      "path": "app/state.py",
+      "bytes": 1662,
+      "sha256": "0f07eaad5f0f9c5ff6c9ead27ab9a3965476450d951a77deb5f3fafd37b3e813"
+    },
+    {
+      "path": "app/training.py",
+      "bytes": 1515,
+      "sha256": "7951e4522f9eb3a3499a638d14762f09a94963b21f14fe43a82dfc01037ee96c"
+    },
+    {
+      "path": "config/config.example.yaml",
+      "bytes": 1624,
+      "sha256": "a07fd1c428e8db58dfdd776a54baa8d363f1a551b34cb70f3866be7701d56b15"
+    },
+    {
+      "path": "config/config.yaml",
+      "bytes": 1624,
+      "sha256": "a07fd1c428e8db58dfdd776a54baa8d363f1a551b34cb70f3866be7701d56b15"
+    },
+    {
+      "path": "docker-compose.yml",
+      "bytes": 244,
+      "sha256": "9d597b968cbcb0109676c7f0fb77638acc9dfb9ec29872c77394c0f5e054db8e"
+    },
+    {
+      "path": "requirements-dev.txt",
+      "bytes": 43,
+      "sha256": "339594d79b64ab72f6aa89357182d38c4b9f8c95949633f1a679b34c7a614a2d"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 138,
+      "sha256": "57d753f449e45b413a6aa24108b99738076906d8fb5e2287321bf19376642a4f"
+    },
+    {
+      "path": "scripts/run-phase1.sh",
+      "bytes": 142,
+      "sha256": "970a1e6be0fbbe50b9b2fcc446185672d28779f3bda1e0a2d5f1cdbec920dc65"
+    },
+    {
+      "path": "scripts/run-phase2.sh",
+      "bytes": 142,
+      "sha256": "7b533c24de7f8b702943c8c4620fa44f89a0fddd943c63aed31ab63dca33ce24"
+    },
+    {
+      "path": "tests/test_v7.py",
+      "bytes": 2050,
+      "sha256": "237830e9adc61e7decce83b298b683d7acf83384899a7e7435a1d485ad5f5f9d"
+    }
+  ],
+  "knownblockers": [
+    {
+      "id": "P0-B01",
+      "severity": "blocking",
+      "location": "app/state.py:transition",
+      "summary": "New batch state dereferences old.get when no state exists.",
+      "reproduction": "tests/test_v7.py::test_manual_flow",
+      "requiredfix": "Initialize an empty state/history before reading predecessor data."
+    },
+    {
+      "id": "P0-B02",
+      "severity": "blocking",
+      "location": "end-to-end validation",
+      "summary": "The only workflow integration test cannot complete phase 1 because of P0-B01.",
+      "reproduction": "python -m pytest -q tests",
+      "requiredfix": "Resolve P0-B01 and expand integration coverage in later packages."
+    }
+  ],
+  "environmentaltests": [
+    {
+      "id": "P0-E01",
+      "scope": "ExifTool embedded write/read validation",
+      "reason": "Requires installed executable and writable JPG behavior in target Docker/NAS environment."
+    },
+    {
+      "id": "P0-E02",
+      "scope": "OpenCV YuNet/SFace ONNX inference",
+      "reason": "Requires approved ONNX model files and target CPU/Docker runtime."
+    },
+    {
+      "id": "P0-E03",
+      "scope": "DSM Task Scheduler, filesystem semantics and permissions",
+      "reason": "Requires actual Synology DSM bind mount, UID/GID and scheduler environment."
+    }
+  ]
+}
