@@ -1,6 +1,6 @@
 # Synology Photo Workflow – Spezifikation v7.3
 
-**Version:** 7.3.4
+**Version:** 7.3
 **Status:** alleinige normative Bezugsquelle fuer Implementierung und Betrieb
 **Zielgruppe:** KI oder Entwicklerteam, das eine bestehende Codebasis prueft, vereinfacht und erweitert
 **Prioritaet:** Stabilitaet, Datensicherheit und minimale Fehlinterpretation
@@ -41,7 +41,7 @@ Erlaubt und verbindlich sind stattdessen: Eingaben, Ausgaben, Artefaktgrenzen, Z
 
 - Der Python-Workflow ist die operative Referenzimplementierung.
 - Das historische Bash-Skript kann als Legacy-Nachweis vorhanden sein, ist aber fachlich nicht massgeblich.
-- Der Workflow nutzt die Ordnersemantik `TEMP_SD`, `TEMP_IMAGES`, `TEMP_DONE` und `TEMP_ERROR`.
+- Der Workflow nutzt die Ordnersemantik `TEMP`, `WORKFLOW_DATA`, `TEMPSD`, `TEMPIMAGES`, `TEMPDONE` und `TEMPERROR`.
 - Optionale Funktionen sind nur **KANN**-Funktionen und duerfen in Produktivtests oder NAS-Pruefungen eingesetzt werden, muessen aber nicht vom Systemkern zwingend implementiert sein.
 - Der Standardmodus bleibt manuell kontrolliert.
 - Keine personenbezogenen Daten, Modelle, Logs oder Laufzeitdaten werden in Git als Betriebszustand eingecheckt.
@@ -52,28 +52,82 @@ Dieser Abschnitt definiert die kanonische Zuordnung von Namen, Rollen und lokale
 
 ### 6.1 Kanonische Namensformen
 
-Die kanonischen Zustands- und Arbeitsordner fuer den NAS-Betrieb sind:
+Die kanonische NAS-Zielstruktur lautet:
 
-- `TEMP_SD`
-- `TEMP_IMAGES`
-- `TEMP_DONE`
-- `TEMP_ERROR`
+```text
+NAS_EXAMPLE/
+  README.md
+  TEMP/
+    README.md
+    MANUALKEEP/
+      README.md
+      inbox/
+        README.md
+      used/
+        README.md
+    TEMPDONE/
+      README.md
+    TEMPERROR/
+      README.md
+    TEMPIMAGES/
+      README.md
+    TEMPSD/
+      README.md
+    WORKFLOW_DATA/
+      README.md
+      faces/
+        README.md
+      models/
+        README.md
+        family/
+          README.md
+        taste/
+          README.md
+      runtime/
+        README.md
+        calibration/
+          README.md
+          batches/
+            README.md
+        locks/
+        logs/
+        quarantine/
+        runsummaries/
+        state/
+      samples/
+        README.md
+        newrefs/
+        notused/
+        reference/
+```
+
+Die kanonischen Zielordner fuer den NAS-Betrieb sind:
+
+- `TEMP`
+- `TEMPSD`
+- `TEMPIMAGES`
+- `TEMPDONE`
+- `TEMPERROR`
 - `MANUALKEEP/inbox`
 - `MANUALKEEP/used`
-- `faces/`
-- `samples/`
-- `models/`
-- `runtime/`
+- `WORKFLOW_DATA/faces`
+- `WORKFLOW_DATA/models`
+- `WORKFLOW_DATA/runtime`
+- `WORKFLOW_DATA/samples`
+
+`WORKFLOW_DATA/` bleibt exakt so erhalten und wird nicht umbenannt. Es ist der verbindliche Bereich fuer Laufzeit-, Modell-, Kalibrierungs-, Sperr- und Summary-Artefakte.
 
 Im Repository oder in Beispielbaeumen duerfen historische oder kompaktere Schreibweisen vorkommen, sie sind aber nur dann zulaessig, wenn ihre Bedeutung eindeutig der kanonischen Form zugeordnet ist.
 
 | Kanonisch | Alias / Migrationsform | Bedeutung | Betrieb erlaubt? | Nur Migration/Lesen? |
 |---|---|---|---|---|
-| `TEMP_SD` | `TEMPSD` | Eingang fuer neue Kameraordner | Nein | Ja |
-| `TEMP_IMAGES` | `TEMPIMAGES` | Ergebnis aus Phase 1 zur manuellen Sichtung | Nein | Ja |
-| `TEMP_DONE` | `TEMPDONE` | Manuell freigegebene Ordner fuer Phase 2 | Nein | Ja |
-| `TEMP_ERROR` | `TEMPERROR` | Quarantaene fuer fehlerhafte oder unsichere Faelle | Nein | Ja |
-| `runtime/run_summaries/` | `runtime/runsummaries/` | Maschinenlesbare Laufzusammenfassungen | Nein | Ja |
+| `TEMPSD` | `TEMP_SD` | Eingang fuer neue Kameraordner | Nein | Ja |
+| `TEMPIMAGES` | `TEMP_IMAGES` | Ergebnis aus Phase 1 zur manuellen Sichtung | Nein | Ja |
+| `TEMPDONE` | `TEMP_DONE` | Manuell freigegebene Ordner fuer Phase 2 | Nein | Ja |
+| `TEMPERROR` | `TEMP_ERROR` | Quarantaene fuer fehlerhafte oder unsichere Faelle | Nein | Ja |
+| `runsummaries/` | `run_summaries/` | Maschinenlesbare Laufzusammenfassungen | Nein | Ja |
+| `newrefs/` | `new_refs/` | Neue Vorschlaege fuer Samples | Nein | Ja |
+| `notused/` | `not_used/` | Nicht aktive Alternativen | Nein | Ja |
 
 Die kanonische Form hat Vorrang. Aliasformen duerfen nicht als neue Fachbegriffe eingefuehrt werden.
 
@@ -81,9 +135,9 @@ Die kanonische Form hat Vorrang. Aliasformen duerfen nicht als neue Fachbegriffe
 
 `NAS_EXAMPLE/` ist der normative Beispielbaum fuer die Zielstruktur auf dem NAS. Er beschreibt die fachliche Semantik der Ordner, nicht notwendigerweise den physischen Repository-Pfad.
 
-Die Wurzel `NAS_EXAMPLE/README.md` beschreibt den Gesamtzweck, die Datenklassen, die Zielpfade und die Zuordnung der Unterbaeume. Jeder fachlich relevante Ordner im Beispielbaum besitzt eine lokale Ordnerbeschreibung.
+Die Wurzel `NAS_EXAMPLE/README.md` beschreibt den Gesamtzweck, die Datenklassen, die Zielpfade und die Zuordnung der Unterbaeume. Jeder fachlich relevante Ordner im Beispielbaum besitzt eine lokale `README.md`.
 
-Die lokale Ordnerbeschreibung darf als `README.md` oder als `ORDNERBESCHREIBUNG.md` vorliegen. Beide gelten als gleichwertig, wenn sie mindestens Zweck, erlaubte Inhalte, verbotene Inhalte, typische Dateitypen, Abgrenzung, Workflow-Rolle und Sicherheitsregeln enthalten. Fuers Projekt sollen neue oder ueberarbeitete Ordner bevorzugt `README.md` verwenden; vorhandene deutsche Bezeichner duerfen als Migrationsform erhalten bleiben.
+Alle Ordnerbeschreibungen muessen als `README.md` vorliegen. `ORDNERBESCHREIBUNG.md` ist kein Zielstandard und darf nur als historischer Bestand in alten Baeumen vorkommen; neue oder ueberarbeitete Ordner erhalten ausschliesslich `README.md`.
 
 Alle Beispiele in diesem Dokument sind ohne abweichende Kennzeichnung **nicht normativ**.
 
@@ -103,14 +157,13 @@ Jede lokale Ordnerdokumentation muss mindestens enthalten:
 
 Folgende Paare muessen in der Dokumentation explizit gegeneinander abgegrenzt werden:
 
-- `reference/` vs. `not_used/`
-- `new_faces/` vs. `reference/`
-- `new_refs/` vs. `reference/`
-- `TEMP_IMAGES/` vs. `TEMP_DONE/`
-- `runtime/state/` vs. `runtime/run_summaries/`
+- `reference/` vs. `notused/`
+- `newrefs/` vs. `reference/`
+- `TEMPIMAGES/` vs. `TEMPDONE/`
+- `WORKFLOW_DATA/runtime/state/` vs. `WORKFLOW_DATA/runtime/runsummaries/`
 - `MANUALKEEP/inbox/` vs. `MANUALKEEP/used/`
-- `models/face/` vs. `models/taste/`
-- `runtime/quarantine/` vs. `runtime/logs/`
+- `WORKFLOW_DATA/models/family/` vs. `WORKFLOW_DATA/models/taste/`
+- `WORKFLOW_DATA/runtime/quarantine/` vs. `WORKFLOW_DATA/runtime/logs/`
 
 ## 7. Datenklassen und Schutz [FR-03]
 
@@ -147,7 +200,7 @@ Alle grossen oder dauerhaft relevanten Daten liegen auf einem persistenten NAS-S
   runtime/
     state/
     locks/
-    run_summaries/
+    runsummaries/
     logs/
     quarantine/
 ```
@@ -188,7 +241,7 @@ Bindestrich-Varianten sind nur als deprecated Alias zulaessig. Sie muessen auf d
 
 ## 12. Phase 1 [FR-07]
 
-Phase 1 verarbeitet vollstaendige Eingangsordner aus `TEMP_SD`.
+Phase 1 verarbeitet vollstaendige Eingangsordner aus `TEMPSD`.
 
 ### Verbindliche Phase-1-Artefakte
 
@@ -200,13 +253,13 @@ Phase 1 verarbeitet vollstaendige Eingangsordner aus `TEMP_SD`.
 
 ### Verbindliche Phase-1-Uebergaenge
 
-- Erfolgreiche Phase 1 geht standardmaessig nach `TEMP_IMAGES`.
-- Nur wenn alle freigegebenen Voraussetzungen erfuellt sind, darf Phase 1 direkt nach `TEMP_DONE` uebergeben werden.
+- Erfolgreiche Phase 1 geht standardmaessig nach `TEMPIMAGES`.
+- Nur wenn alle freigegebenen Voraussetzungen erfuellt sind, darf Phase 1 direkt nach `TEMPDONE` uebergeben werden.
 - Jede Abweichung oder Integritaetsunsicherheit fuehrt zu Rueckstufung oder Quarantaene.
 
 ## 13. Phase 2 [FR-08]
 
-Phase 2 arbeitet ausschliesslich auf freigegebenen Batches in `TEMP_DONE`.
+Phase 2 arbeitet ausschliesslich auf freigegebenen Batches in `TEMPDONE`.
 
 ### Verbindliche Phase-2-Artefakte
 
@@ -248,24 +301,24 @@ Die Serienlogik darf die aktive-JPG-Regel nicht aushebeln.
 
 ## 16. Persoenlicher Geschmack [FR-11]
 
-Das Geschmacksmodell basiert ausschließlich auf bewusst bestätigten Bildern und soll eine menschliche Auswahl ergänzen, nicht selbstverstärkend ersetzen. Trainiert wird nur mit der in `samples/selection.json` als aktiv markierten Auswahl aus `samples/reference/`; verwaltete Alternativen in `samples/not_used/` können später erneut ausgewählt, Vorschläge aus `samples/new_refs/` jedoch erst nach manueller Bestätigung berücksichtigt werden.
+Das Geschmacksmodell basiert ausschließlich auf bewusst bestätigten Bildern und soll eine menschliche Auswahl ergänzen, nicht selbstverstärkend ersetzen. Trainiert wird nur mit der in `samples/selection.json` als aktiv markierten Auswahl aus `samples/reference/`; verwaltete Alternativen in `samples/notused/` können später erneut ausgewählt, Vorschläge aus `samples/newrefs/` jedoch erst nach manueller Bestätigung berücksichtigt werden.
 
 ```text
 samples/
   reference/       # aktive, manuell bestätigte Geschmackssamples
-  new_refs/        # automatisch vorgeschlagene, noch nicht aktive Samples
-  not_used/        # nicht aktive, workflowverwaltete Alternativen
+  newrefs/         # automatisch vorgeschlagene, noch nicht aktive Samples
+  notused/         # nicht aktive, workflowverwaltete Alternativen
   selection.json   # autoritative aktive Auswahl für das Training
   candidates.json  # Bewertung und Status neuer Vorschläge
 ```
 
-Bei jedem Start prüft das System den Fingerprint des verwalteten Pools aus `reference/` und zulässigen verwalteten Alternativen in `not_used/`. Fehlt oder veraltet `selection.json`, wird es aus diesem Pool deterministisch neu erstellt. Ausschließlich die darin als `active` markierten Dateien bilden die Modellquelle; der physische Ordnerinhalt allein ist keine Autorität. Änderungen an der aktiven Auswahl lösen ein vollständiges, atomar aktiviertes Neutraining des kleinen lokalen Geschmacksmodells aus; der Workflow wartet bei aktivierter Funktion auf den erfolgreichen Abschluss. Das Modell, der Cache und die Manifeste verbleiben auf dem persistierenden NAS-Share.
+Bei jedem Start prüft das System den Fingerprint des verwalteten Pools aus `reference/` und zulässigen verwalteten Alternativen in `notused/`. Fehlt oder veraltet `selection.json`, wird es aus diesem Pool deterministisch neu erstellt. Ausschließlich die darin als `active` markierten Dateien bilden die Modellquelle; der physische Ordnerinhalt allein ist keine Autorität. Änderungen an der aktiven Auswahl lösen ein vollständiges, atomar aktiviertes Neutraining des kleinen lokalen Geschmacksmodells aus; der Workflow wartet bei aktivierter Funktion auf den erfolgreichen Abschluss. Das Modell, der Cache und die Manifeste verbleiben auf dem persistierenden NAS-Share.
 
-Die Auswahl- und Ordnerlogik entspricht bewusst der Gesichtserkennung: Aktiv ist nur `reference/` mit den in `selection.json` als `active` markierten Dateien. Der verwaltete Auswahlpool umfasst `reference/` und verwaltete Alternativen in `not_used/`; `new_refs/` enthält nur menschlich zu prüfende Vorschläge. Automatisch erzeugte oder ausdrücklich verwaltbare Alternativen dürfen zwischen `reference/` und `not_used/` wechseln; Herkunft, Status und Auswahlgrund werden manifestiert. Manuell eingebrachte Referenzen sind `manual_protected`, werden nicht automatisch gelöscht und standardmäßig nicht automatisch verschoben. Grenzen, Audit-Informationen, Copy-Verify-Delete-Regeln und der sichere Nicht-Löschstandard sind gleich.
+Die Auswahl- und Ordnerlogik entspricht bewusst der Gesichtserkennung: Aktiv ist nur `reference/` mit den in `selection.json` als `active` markierten Dateien. Der verwaltete Auswahlpool umfasst `reference/` und verwaltete Alternativen in `notused/`; `newrefs/` enthält nur menschlich zu prüfende Vorschläge. Automatisch erzeugte oder ausdrücklich verwaltbare Alternativen dürfen zwischen `reference/` und `notused/` wechseln; Herkunft, Status und Auswahlgrund werden manifestiert. Manuell eingebrachte Referenzen sind `manual_protected`, werden nicht automatisch gelöscht und standardmäßig nicht automatisch verschoben. Grenzen, Audit-Informationen, Copy-Verify-Delete-Regeln und der sichere Nicht-Löschstandard sind gleich.
 
 Richtwerte: `min_active: 50`, `target_active: 75`, `max_active: 100`, `max_not_used: 200`, höchstens zehn neue Vorschläge pro Lauf, höchstens 100 offene Vorschläge und keine neuen Vorschläge bei vollem `not_used/`. Eine spaetere optional freigegebene Bereinigung darf nur automatisch erzeugte Kopien nach Aufbewahrungsfrist löschen.
 
-Ein Bild darf nach `new_refs/` kopiert werden, wenn es `keep` ist, die höchste konfigurierbare Sternklasse (standardmäßig fünf Sterne) erreicht, technisch ausreichend gut ist, kein Duplikat darstellt und Stil, Komposition, Motiv, Licht oder Farbstimmung gegenüber der aktiven Auswahl messbar erweitert. Der Nutzer bestätigt ein Sample nur durch manuelles Kopieren nach `reference/`. Nicht angenommene oder verdrängte automatisch erzeugte Kopien können nach `not_used/` verschoben werden; sie trainieren das Modell nicht.
+Ein Bild darf nach `newrefs/` kopiert werden, wenn es `keep` ist, die höchste konfigurierbare Sternklasse (standardmäßig fünf Sterne) erreicht, technisch ausreichend gut ist, kein Duplikat darstellt und Stil, Komposition, Motiv, Licht oder Farbstimmung gegenüber der aktiven Auswahl messbar erweitert. Der Nutzer bestätigt ein Sample nur durch manuelles Kopieren nach `reference/`. Nicht angenommene oder verdrängte automatisch erzeugte Kopien können nach `notused/` verschoben werden; sie trainieren das Modell nicht.
 
 ## 17. Bekannte Gesichtserkennung [FR-12]
 
@@ -349,7 +402,7 @@ Steuerdaten müssen versioniert, validierbar und atomar geschrieben sein. Dazu g
 
 - `selection.json`,
 - `candidates.json`,
-- `runtime/state/<batch-id>.json`,
+- `WORKFLOW_DATA/runtime/state/<batch-id>.json`,
 - JSON-Run-Summary,
 - optionale Batch-Records fuer Kalibrierung.
 
@@ -357,7 +410,7 @@ Jede dieser Dateien muss eine stabile Kennung und eine Schema-Version tragen. Un
 
 ## 21. Task Scheduler, Docker und Wiederaufnahme [FR-15]
 
-Der Scheduler startet den Container mit persistentem NAS-Mount. Pro Batch existiert genau eine Zustandsdatei unter `runtime/state/<batch-id>.json`.
+Der Scheduler startet den Container mit persistentem NAS-Mount. Pro Batch existiert genau eine Zustandsdatei unter `WORKFLOW_DATA/runtime/state/<batch-id>.json`.
 
 Die Batch-ID muss aus Quellordner und Fingerprint ableitbar und stabil sein. Wiederaufnahme bedeutet: bereits validierte Schritte werden nicht blind wiederholt, offene Schritte werden anhand der Zustandsdateien und Artefakte fortgesetzt oder sauber neu geprüft.
 
@@ -407,7 +460,7 @@ Konfigurationen muessen lesbar, kommentiert und von der Spezifikation ableitbar 
 
 ## 28. Bedienung im Alltag [FR-19]
 
-Der Alltagsfluss bleibt einfach: Eingang nach `TEMP_SD`, Lauf starten, Run-Summary pruefen, manuell freigeben, Phase 2 ausfuehren. Komplexere Funktionen duerfen diesen Grundfluss nicht verdecken.
+Der Alltagsfluss bleibt einfach: Eingang nach `TEMPSD`, Lauf starten, Run-Summary pruefen, manuell freigeben, Phase 2 ausfuehren. Komplexere Funktionen duerfen diesen Grundfluss nicht verdecken.
 
 ## 29. Pruefung der bestehenden Codebasis
 
@@ -443,7 +496,7 @@ Die Tests pruefen das Ergebnis und die Sicherheitsgrenzen; die technische Tiefen
 7. Steuerdateien sind versioniert, validierbar und atomar geschrieben.
 8. Wiederaufnahme ist idempotent und ohne stillen Datenverlust moeglich.
 9. Die Selbstdokumentation von `NAS_EXAMPLE/` ist fuer fachlich relevante Ordner vorhanden.
-10. Aehnliche Ordner sind in ihren README-Dateien explizit gegeneinander abgegrenzt.
+10. Alle Ordnerbeschreibungen sind als `README.md` gefuehrt.
 11. Manual Keep, Faces und Samples sind klar voneinander getrennt.
 12. Kalibrierung dokumentiert nur, schaltet nicht still um.
 13. Automatikstufen koennen keine Sicherheitsgrenzen aushebeln.
@@ -458,4 +511,4 @@ Beispiele fuer Ordner-READMEs, JSON-Strukturen und Konfigurationsmuster koennen 
 
 ---
 
-*Ende der Spezifikation v7.3.4.*
+*Ende der Spezifikation v7.3.6.*
