@@ -130,8 +130,8 @@ Mindestens erforderlich sind:
 - `run`: folgt dem konfigurierten Ausführungsmodus.
 - `phase1`: führt nur Phase 1 aus.
 - `phase2`: führt nur Phase 2 aus.
-- `rebuild-family-cache`: baut den optionalen Cache bekannter Gesichter neu auf.
-- `rebuild-personal-model`: baut das optionale Geschmacksmodell neu auf.
+- `rebuild_family_cache`: baut den optionalen Cache bekannter Gesichter neu auf.
+- `rebuild_personal_model`: baut das optionale Geschmacksmodell neu auf.
 
 `run` unterstützt:
 
@@ -850,7 +850,7 @@ Die Registry ist explizit, deterministisch und ohne dynamisches Nachladen aus Ko
 
 Eine optionale ID darf nur angeboten werden, wenn ihr Adapter, ihre Abhängigkeiten, ihre Modell-Lizenzhinweise, Diagnose und Tests tatsächlich im Release vorhanden sind. `insightface_onnx` ist kein Muss für v7.2. Die Factory prüft zuerst ID, Profil, Konfigurationsschema, Bibliotheken, Provider, Modell-Dateien und Modell-Hashes und erzeugt erst dann den Adapter.
 
-`diagnose` gibt maschinenlesbar mindestens Backend-ID, Adapterversion, verfügbare Provider, verwendeten Provider, Modell-Fingerprints, Metrik, Embedding-Dimension und Bereitschaft zurück. Der CLI-Befehl `diagnose-face-backend` ist verpflichtend; er verändert weder Bilder noch Caches und endet bei nicht bereitem Backend mit einem Nicht-Null-Exit-Code.
+`diagnose` gibt maschinenlesbar mindestens Backend-ID, Adapterversion, verfügbare Provider, verwendeten Provider, Modell-Fingerprints, Metrik, Embedding-Dimension und Bereitschaft zurück. Der CLI-Befehl `diagnose_face_backend` ist verpflichtend; er verändert weder Bilder noch Caches und endet bei nicht bereitem Backend mit einem Nicht-Null-Exit-Code.
 
 ### Konfiguration und Modellwechsel
 
@@ -894,7 +894,7 @@ family_recognition:
       provider: CUDAExecutionProvider
 ```
 
-Ein Wechsel von Backend-ID, Adapterversion, Modellhash, Provider, Preprocessing-Version, Embedding-Dimension, Metrikname oder Metrikrichtung ändert den Face-Cache-Fingerprint zwingend. Caches und Embeddings unterschiedlicher Fingerprints dürfen weder gemischt noch verglichen werden. Vor der nächsten aktiven Face-Auswertung verlangt der Workflow `diagnose-face-backend` mit Erfolg und `rebuild-family-cache`; ein automatischer Rebuild darf nur mit dem expliziten ausgewählten Backend erfolgen. Der vorherige valide Cache bleibt bis zur atomaren Aktivierung erhalten, ist aber für das neue Backend nicht verwendbar.
+Ein Wechsel von Backend-ID, Adapterversion, Modellhash, Provider, Preprocessing-Version, Embedding-Dimension, Metrikname oder Metrikrichtung ändert den Face-Cache-Fingerprint zwingend. Caches und Embeddings unterschiedlicher Fingerprints dürfen weder gemischt noch verglichen werden. Vor der nächsten aktiven Face-Auswertung verlangt der Workflow `diagnose_face_backend` mit Erfolg und `rebuild_family_cache`; ein automatischer Rebuild darf nur mit dem expliziten ausgewählten Backend erfolgen. Der vorherige valide Cache bleibt bis zur atomaren Aktivierung erhalten, ist aber für das neue Backend nicht verwendbar.
 
 ### Face-Ausgaben und Tests
 
@@ -912,7 +912,7 @@ Die Code-Struktur trennt Einlesen/Validieren, fachliche Entscheidung, Seiteneffe
 
 Dokumente, Konfiguration und Implementierung müssen dieselben kanonischen Namen, Standardwerte, CLI-Befehle, Statuswerte, Pfade und Backend-IDs verwenden. Bei Konflikt gilt: Sicherheits- und Datenvertragsregeln vor Fachlogik, Fachlogik vor Beispielkonfiguration, und die aktuelle v7.2-Spezifikation vor älteren Dokumenten. Jeder Pull Request oder Änderungssatz, der Verhalten, Konfiguration, CLI, Artefakt-Schema oder Backend-Registry ändert, aktualisiert im selben Änderungssatz Implementierung, kommentierte Beispielkonfiguration, `docs/MANUAL_DE.md`, Konfigurationsreferenz, Architektur- und Betriebsdokumentation, Changelog sowie automatisierte Tests.
 
-Das ausführliche `docs/MANUAL_DE.md` ist ein nutzerorientiertes Handbuch und muss jede produktive Funktion, alle Arbeitsordner, alle CLI-Kommandos, Fehlermeldungen und Wiederherstellungswege erklären. Es enthält eine vollständige Backend-Übersicht mit Status, Hardware, Image, Abhängigkeiten, Modellquellen/Lizenzen, Metrik und Diagnose. Für jedes unterstützte Backend beschreibt es den sicheren Wechsel in dieser Reihenfolge: Backend auswählen, passendes Image bereitstellen, Modelle persistent ablegen und Hash prüfen, Konfiguration ändern, `diagnose-face-backend` ausführen, `rebuild-family-cache` ausführen und erst danach einen kontrollierten Testlauf starten. Es muss hervorheben, dass Embeddings niemals backendübergreifend wiederverwendet werden.
+Das ausführliche `docs/MANUAL_DE.md` ist ein nutzerorientiertes Handbuch und muss jede produktive Funktion, alle Arbeitsordner, alle CLI-Kommandos, Fehlermeldungen und Wiederherstellungswege erklären. Es enthält eine vollständige Backend-Übersicht mit Status, Hardware, Image, Abhängigkeiten, Modellquellen/Lizenzen, Metrik und Diagnose. Für jedes unterstützte Backend beschreibt es den sicheren Wechsel in dieser Reihenfolge: Backend auswählen, passendes Image bereitstellen, Modelle persistent ablegen und Hash prüfen, Konfiguration ändern, `diagnose_face_backend` ausführen, `rebuild_family_cache` ausführen und erst danach einen kontrollierten Testlauf starten. Es muss hervorheben, dass Embeddings niemals backendübergreifend wiederverwendet werden.
 
 ## Konfiguration und Dokumentation
 
@@ -1049,9 +1049,9 @@ Eine Funktion gilt erst als umgesetzt, wenn sie im Workflow aufgerufen wird, kon
 Die Umsetzung ist akzeptabel, wenn:
 
 1. Bash-Rückfallebene und fachliche Phase-1-/Phase-2-Logik erhalten bleiben.
-5. Das Face-System den vollständigen Face-Backend-Vertrag v7.2 erfüllt: explizite Registry, kein Fallback, modellneutrale Fachlogik, Metrikrichtung, Cache-Trennung, Diagnose und Tests.
-6. Das Handbuch und die übrigen Pflichtdokumente die tatsächlichen Backends, Konfiguration, Images und den sicheren Modellwechsel vollständig erklären.
-7. Aktive Skripte außerhalb von `legacy/` die Regeln für Lesbarkeit, Docstrings, Sicherheitskommentare und Trennung von Fachlogik und Seiteneffekten erfüllen.
+2. Das Face-System den vollständigen Face-Backend-Vertrag v7.2 erfüllt: explizite Registry, kein Fallback, modellneutrale Fachlogik, Metrikrichtung, Cache-Trennung, Diagnose und Tests.
+3. Das Handbuch und die übrigen Pflichtdokumente die tatsächlichen Backends, Konfiguration, Images und den sicheren Modellwechsel vollständig erklären.
+4. Aktive Skripte außerhalb von `legacy/` die Regeln für Lesbarkeit, Docstrings, Sicherheitskommentare und Trennung von Fachlogik und Seiteneffekten erfüllen.
 5. Der sichere Standard `TEMP_SD -> TEMP_IMAGES -> TEMP_DONE -> Phase 2` funktioniert.
 6. Automatische Phase-1-zu-Phase-2-Nutzung nur explizit konfigurierbar ist.
 7. Technisches Bildscoring, persönlicher Score und bekannter Familien-Score nachvollziehbar kombiniert werden.
@@ -1084,270 +1084,189 @@ Die Umsetzung ist akzeptabel, wenn:
 27. Transparente YAML-Basisgewichte, Manual Keep und alle Hard-Safety-Regeln bleiben bei lernender Gewichtung sichtbar und wirksam.
 
 
-# Anhang v7.1 – Finaler Implementierungs- und Abnahmevertrag
+# Anhang v7.2 – Finaler Implementierungs- und Abnahmevertrag
 
-## Normativer Status und Leseregel
+## Normativer Status und Vorrang
 
-Dieser Anhang ist zusammen mit den vorstehenden Abschnitten die **finale Spezifikation v7.1**. Er konkretisiert nur dort, wo v7 bisher einen Ermessensspielraum ließ. Bei einem Widerspruch gilt diese Reihenfolge: (1) Daten- und Löschsicherheit, (2) dieser Anhang, (3) der vorstehende v7-Haupttext, (4) explizite Migrationsregeln, (5) ältere Projektbeschreibungen und Bash-Referenzen. Historische Beispiele, alte Schlüssel und alte Tag-Namen sind niemals führend.
+Dieser Anhang ist verbindlicher Bestandteil der Spezifikation v7.2 und präzisiert sie als deterministischen Implementierungs-, Datenvertrags- und Abnahmevertrag. Bei Widerspruch gilt zwingend: (1) Datenintegrität, Löschschutz, Datenschutz und Sicherheitsgrenzen, (2) ausdrückliche Verbote und Sicherheitsregeln des Haupttexts, (3) dieser Anhang, (4) übrige Fachregeln des Haupttexts, (5) kommentierte Beispielkonfigurationen und Handbuchbeispiele, (6) Migrationsaliase sowie historische Dokumente und Bash-Referenzen.
 
-Der produktive Mindestumfang ist: zweiphasiger JPG-/ARW-Workflow, Assisted Review, Culling, eingebettete Metadaten, sichere Archive, Batch-Zustand, Reporting und Kalibrierung. Die ältere Face-Learning-Erweiterung mit Unknown-Clustern, Kandidatenrouting, Referenzselektion und Indexverwaltung ist ein separat konfiguriertes Erweiterungsmodul. Sie darf den Mindestworkflow nicht blockieren und darf niemals selbst Identitäten bestätigen oder Referenzen aktivieren.
+Ein Beispiel darf keine Sicherheitsregel abschwächen. Ein Migrationsalias definiert keinen neuen produktiven Vertrag. Ältere Namen, Konfigurationsschlüssel, Backend-IDs und Metadaten-Tags sind ausschließlich lesende Kompatibilitätsoptionen, soweit diese Spezifikation sie ausdrücklich zulässt.
 
-## Kanonische Begriffe
+Der produktive Mindestumfang umfasst den zweiphasigen JPG-/ARW-Workflow, `assisted_review`, Culling, Manual Keep, validierte eingebettete Metadaten, sichere Archive, atomare Batch-Zustände und Wiederaufnahme, Reporting, Kalibrierungsrecords, optionales persönliches Scoring sowie den optionalen Abgleich ausschließlich bekannter manuell gepflegter Personen. Der NAS-Standard für Face Recognition ist `opencv_yunet_sface_cpu`.
+
+Unbekannte Gesichter dürfen niemals gespeichert, geclustert, indexiert, einer Identität zugeordnet oder als Trainings- beziehungsweise Referenzdaten aktiviert werden. Unknown-Clustering, Unknown-to-Known-Zuordnung, Gesichtsreview-UI und Vektorindex-Infrastruktur sind nicht Teil des Projekts.
+
+## Kanonische Begriffe und Namen
 
 | Begriff | Verbindliche Bedeutung |
 |---|---|
-| Batch | Ein bearbeitbarer Kameraordner mit stabiler `batch_id` und eindeutiger Manifest-ID. |
-| Aktives JPG | JPG im Hauptordner des Batches; nur dieses schützt ein passendes ARW. |
-| Score-Entscheidung | Regelbasierte Klasse vor manueller Sichtung (`keep`, `review`, `reject`). |
-| Finale Entscheidung | Menschliche Endentscheidung aus dem Phase-2-Ordnerzustand. |
-| Entbehrliches ARW | ARW ohne exakt zugeordnetes aktives JPG nach erfolgreicher Phase-2-Validierung. |
-| Archivaktivierung | Atomarer Wechsel einer vollständig geschriebenen und validierten temporären ZIP zur finalen ZIP. |
-| Wiederaufnahme | Sicheres Fortsetzen anhand von Zustand und Manifest; kein erneutes Raten oder Überschreiben. |
+| Batch | Kameraordner mit unveränderlicher `batch_id`, Eingangsmanifest und zentraler Zustandsdatei |
+| Aktives JPG | JPG im Hauptordner; nur dieses schützt ein ARW mit gleichem Basename |
+| Score-Entscheidung | Phase-1-Klasse `keep`, `review` oder `reject` vor manueller Sichtung |
+| Finale Entscheidung | Deterministisch aus dem Phase-2-Ordnerzustand abgeleitete Endentscheidung |
+| Family-Backend | Explizit registrierter Adapter für bekannte Gesichter |
+| Face-Cache-Fingerprint | Fingerprint aus Backend, Adapter, Modellen, Provider, Preprocessing, Metrik, Auswahl und Parametern |
+| Archivaktivierung | Atomarer Wechsel einer vollständig validierten temporären ZIP zur finalen ZIP |
+| Wiederaufnahme | Idempotentes Fortsetzen anhand von Zustand, Manifesten, Hashes und Artefaktprüfung |
+| Blockierender Fehler | Fehler, der sicherheitsrelevante Batch-Aktionen verhindert |
 
-Alle Enum-Werte, Dateinamen, JSON-Feldnamen und Konfigurationsschlüssel dieser Spezifikation verwenden `snake_case`. Sichtbare Ordnernamen und die ausdrücklich festgelegten Keyword-Präfixe bleiben Ausnahmen.
-
-## Referenzkonfiguration
-
-Die Implementierung muss diese YAML-Struktur vollständig validieren. Nicht bekannte Schlüssel sind ein Konfigurationsfehler, außer sie liegen unter einem explizit als erweiterbar dokumentierten `extensions`-Block. Relative Pfade werden gegen `paths.base_dir` aufgelöst und dürfen dieses Verzeichnis nach Normalisierung nie verlassen.
-
-```yaml
-specification:
-  version: "7.1"
-
-paths:
-  base_dir: "/volume1/photo-workflow"
-  temp_sd: "TEMP_SD"
-  temp_images: "TEMP_IMAGES"
-  temp_done: "TEMP_DONE"
-  temp_error: "TEMP_ERROR"
-  workflow_data: "_workflow_data"
-
-workflow:
-  phase_execution: "phase1_then_phase2" # phase1_only | phase2_only
-  batch_limit: 0                          # 0 = alle vollständigen Batches
-  batch_sort: "oldest_first"
-  skip_incomplete_batches: true
-  date_reconstruction:
-    mode: "legacy_bash"                  # legacy_bash | full_year
-    decade_prefix: "202"
-    year_digit_index: 3
-
-culling:
-  decision_mode: "assisted_review"
-  auto_keep_min_rating: 2
-  keep_threshold: 0.65
-  reject_threshold: 0.35
-  final_component_weights:
-    base_score: 0.55
-    eye_score: 0.10
-    personal_score: 0.20
-    family_score: 0.15
-  base_weights:
-    sharpness: 0.35
-    aesthetic: 0.35
-    exposure: 0.20
-    reference_score: 0.10
-  star_rating_bands:
-    - {min: 0.00, max: 0.19, rating: 0}
-    - {min: 0.20, max: 0.39, rating: 1}
-    - {min: 0.40, max: 0.59, rating: 2}
-    - {min: 0.60, max: 0.74, rating: 3}
-    - {min: 0.75, max: 0.89, rating: 4}
-    - {min: 0.90, max: 1.00, rating: 5}
-
-phase2:
-  delete_unneeded_arws_after_verified_archive: true
-  allow_automatic_handoff: false
-
-metadata:
-  write_mode: "embedded_exiftool"
-  verify_after_write: true
-  create_exiftool_backups: false
-  sidecar_recovery_enabled: false
-
-family_recognition:
-  enabled: false
-  backend: "opencv_yunet_sface"
-  detector_model: "models/faces/face_detection_yunet.onnx"
-  recognizer_model: "models/faces/face_recognition_sface.onnx"
-  similarity_metric: "cosine_similarity"
-  match_threshold: null
-  protect_detected_family: true
-  cache_dir: "models/family_faces"
-
-automation:
-  enabled: false
-  phase2_auto_handoff: false
-  activation_requires:
-    explicit_user_approval: true
-    readiness_status: "eligible_automatic_phase2"
-    config_fingerprint_match: true
-    model_fingerprint_match: true
-    completed_nas_e2e_acceptance: true
-```
-
-`decision_mode: automatic` ist bis zu einer späteren, explizit versionierten Erweiterung ungültig. Die vorhandene historische Automatikfunktion wird damit bewusst nicht Teil des v7.1-Produktivumfangs. `allow_automatic_handoff` und `phase2_auto_handoff` müssen in v7.1 `false` sein; jede Abweichung ist ein Validierungsfehler, nicht nur eine Warnung.
-
-Validierungsregeln: `batch_limit` ist eine Ganzzahl größer oder gleich 0; `0 <= reject_threshold < keep_threshold <= 1`; alle Gewichte sind nicht negativ und ihre Summe ist bei voller Komponentenverfügbarkeit exakt 1,0; Sternbänder sind lückenlos, nicht überlappend und decken [0,1] ab; `auto_keep_min_rating` liegt in [0,5]. Ein gesetzter Face-`match_threshold` liegt in der für das Backend dokumentierten Skala. `null` bedeutet unkalibriert und verbietet Family-Scoring sowie Personentags.
+Neue Konfigurationsschlüssel, JSON-Felder, Python-Namen, CLI-Subcommands, Statuswerte und interne Dateinamen verwenden `snake_case`. Sichtbare Arbeitsordner bleiben verbindlich `TEMP_SD`, `TEMP_IMAGES`, `TEMP_DONE`, `TEMP_ERROR`, `ARW`, `SAVE`, `Review` und `Rejected`.
 
 ## CLI- und Modulvertrag
 
-Der einzige produktiv unterstützte Einstiegspunkt lautet:
+Der produktive Einstiegspunkt lautet:
 
-```bash
-python -m app.photoworkflow --config /config/config.yaml run
+```sh
+python -m app.photoworkflow --config /config/config.yaml <command>
 ```
 
-Erlaubte Befehle sind `run`, `phase1`, `phase2`, `rebuild_family_cache`, `validate_config`, `recover_batch` und `rebuild_calibration_index`. `run` folgt `workflow.phase_execution`; ein expliziter Phasenbefehl überschreibt diese Einstellung. `recover_batch` akzeptiert genau eine `batch_id`, führt keine neue Culling-Bewertung aus und darf niemals ohne vorhandenes Batch-Manifest ARWs löschen.
+| Kanonischer Befehl | Wirkung |
+|---|---|
+| `run` | Führt den durch `workflow.phase_execution` erlaubten Ablauf aus |
+| `phase1` | Führt ausschließlich Phase 1 aus |
+| `phase2` | Führt ausschließlich Phase 2 aus |
+| `rebuild_family_cache` | Baut den Face-Cache mit dem explizit gewählten Backend atomar neu auf |
+| `rebuild_personal_model` | Baut das persönliche Modell nach den Sample- und Kalibrierungsregeln neu auf |
+| `diagnose_face_backend` | Prüft Backend, Modelle, Hashes, Provider und Metrik ohne Seiteneffekte |
+| `validate_config` | Prüft Schema, Pfade, Abhängigkeiten und Widersprüche ohne Seiteneffekte |
+| `print_effective_config` | Gibt wirksame Konfiguration ohne Secrets aus |
+| `rebuild_calibration_index` | Baut Index und Summary ausschließlich aus validen Batch-Records neu auf |
+| `recover_batch <batch_id>` | Setzt nur einen vorhandenen validen Batch sicher fort |
+| `reopen_review <batch_id>` | Privilegierter, standardmäßig deaktivierter Korrekturbefehl |
+
+Historische Bindestrichformen dürfen ausschließlich als lesende CLI-Aliase bestehen. Hilfeausgabe, Handbuch, Tests und neue Automatisierung verwenden nur die kanonischen Unterstrichformen. Ein expliziter Phasenbefehl übersteuert `workflow.phase_execution`, jedoch niemals Lock-, Integritäts-, Sicherheits- oder Automatikprüfungen.
 
 | Modul | Exklusive Verantwortung |
 |---|---|
-| `app.cli` | Argumente, Konfiguration laden, Exit-Codes und Befehlsdispatch |
-| `app.configuration` | YAML-Schema, Alias-Migration, Validierung, Pfadauflösung, Konfigurationsfingerprint |
-| `app.phases` | Auswahl und Orchestrierung von Phase 1 und Phase 2 |
-| `app.inventory` | Stabile Eingänge, Fingerprints, Datei- und Paarinventar |
-| `app.culling` | Basis-/Finalscore, Sterne, Score- und Serienentscheidung |
-| `app.metadata` | Exiftool-Aufruf, Keyword-Merge und Rückleseprüfung |
-| `app.archives` | ZIP-Sicherheitsprüfung, Erstellung, Hash, Validierung und Aktivierung |
-| `app.batch_state` | Zustandsmaschine, Manifeste, Resume-Entscheidungen |
-| `app.calibration` | Review-Records, rebuildbare Indizes und Readiness-Berechnung |
-| `app.family_recognition` | YuNet/SFace, Embedding-Cache, Diagnose und Schutzsignal |
-| `app.reporting` | stdout, Logs, JSON-Run-Summaries |
-| `app.locks` | Lauf- und Batch-Locks, Eigentümer und Stale-Lock-Prüfung |
+| `app.cli` | Argumente, Konfiguration laden, Dispatch und Exit-Codes |
+| `app.configuration` | YAML-Schema, Alias-Migration, Kommentierungsprüfung, Pfadauflösung und Fingerprint |
+| `app.inventory` | Stabilitätsprüfung, Inventar, Fingerprints und JPG-/ARW-Paarbildung |
+| `app.phases` | Orchestrierung und Reihenfolge von Phase 1 und Phase 2 |
+| `app.culling` | Merkmale, Score-Komposition, Sterne und Serienentscheidung |
+| `app.manual_keep` | Sichere Inbox-Zuordnung und Verschiebung nach `used` |
+| `app.metadata` | Exiftool mit `shell=False`, Merge und Rückleseprüfung |
+| `app.archives` | ZIP-Erzeugung, Validierung, Hash, Aktivierung und Kollisionen |
+| `app.batch_state` | Zustandsautomat, atomare Updates und Wiederaufnahme |
+| `app.calibration` | Review-Records, Index, Kennzahlen, Readiness und Schattenmodell |
+| `app.facebackend` | Modellneutrale Protokolle, Dataclasses, Metrik- und Fehlervertrag |
+| `app.facebackend_factory` | Statische Registry und Backend-Validierung |
+| `app.facebackend_diagnosis` | Einheitliche Diagnose- und Versionsdaten |
+| `app.facebackend_opencv` | Adapter `opencv_yunet_sface_cpu` |
+| `app.facebackend_onnx` | Optionale ONNX-CPU-/CUDA-Adapter |
+| `app.facebackend_dlib` | Optionaler dlib-Adapter, wenn tatsächlich geliefert |
+| `app.familyrecognition` | Modellneutrale Referenz-, Cache-, Match- und Kandidatenfachlogik |
+| `app.reporting` | Logs, Scheduler-Ausgabe und JSON-Run-Summaries |
+| `app.locks` | Lauf- und Batch-Locks einschließlich Stale-Lock-Prüfung |
 
-Fachlogik darf nicht in `app.cli` dupliziert werden. Jedes Modul stellt eine kleine, testbare Schnittstelle bereit; Dateisystemmutationen erfolgen ausschließlich über die Module `archives`, `metadata`, `batch_state` und die kontrollierten Phase-Operationen.
+`app.familyrecognition` darf weder `cv2`, `dlib`, `face_recognition`, `onnxruntime` noch `insightface` importieren. Nur ein Adapter darf die dazugehörige Bibliothek, Modellladung, Provider-Initialisierung und Vorverarbeitung kennen.
 
-## Datei- und Zuordnungsvertrag
+## Dateiheader, Lesbarkeit und Versionierung
 
-Ein Batch hat diesen sichtbaren Aufbau:
+Diese Anforderungen gelten für alle vom Projekt gepflegten Dateien außerhalb von `legacy/`, sofern das jeweilige Dateiformat Kommentare oder einen gleichwertigen nativen Metadatenmechanismus erlaubt. Dateien unter `legacy/` bleiben ausdrücklich unverändert und sind ausgenommen.
 
-```text
-<batch>/
-  <aktive JPGs im Hauptordner>
-  ARW/
-  _Review/
-  _Rejected/
-  SAVE/
-    <batch>_ALL_JPG.zip
-    <batch>_SORT_ARW.zip
-    culling_scores.csv
+Jede neue oder geänderte menschenlesbare Textdatei muss am Dateianfang einen Header-Kommentar im nativen Kommentarformat ihres Formats enthalten. Er enthält mindestens: Projektname `photo-workflow`, Dateiname relativ zum Repository, Mitentwickler `MaiTai`, Erstellungsdatum im ISO-8601-Format `YYYY-MM-DD`, Spezifikations- beziehungsweise Projektversion `7.2` und eine kurze Funktionsbeschreibung. Die Angaben müssen beim Erstellen oder wesentlichen Überarbeiten der Datei gepflegt werden; das Erstellungsdatum bleibt der ursprüngliche Erstellungstag und wird nicht bei jeder Änderung überschrieben. Optional darf ein separates `last_updated` ergänzt werden.
+
+Für Markdown ist ein HTML-Kommentar am Dateianfang zu verwenden, für Python ein Modul-Docstring mit Headerfeldern, für Shell/YAML/Dockerfile/Compose/INI/Text `#`, für JSON mangels Kommentarunterstützung eine gleichwertige Top-Level-Metadatenstruktur nur dann, wenn sie Teil des zulässigen Schemas ist. Reine Binärdateien, externe Modellartefakte, ZIP-Dateien, Bilder, standardisierte JSON-Steuerdateien mit festem Datenvertrag, von Werkzeugen generierte Lock-Dateien und Drittanbieterdateien sind ausgenommen; sie dürfen nicht allein wegen dieser Regel inhaltlich verändert werden.
+
+Beispiel für Python:
+
+```python
+"""photo-workflow | Datei: app/example.py | Mitentwickler: MaiTai
+Erstellt: 2026-07-28 | Projektversion: 7.2
+Funktion: Kurzbeschreibung der Verantwortung dieses Moduls.
+"""
 ```
 
-Nur `.jpg` und `.jpeg` sowie `.arw` sind im MVP unterstützte Arbeitsformate; Erweiterungen werden ASCII-case-insensitiv verglichen. Die Paarbildung verwendet den vollständigen Dateinamen ohne letzte Erweiterung (Basename), keine Teilstrings und keine Ähnlichkeitssuche. Genau ein oder mehrere aktive JPGs mit identischem Basename schützen das zugehörige einzelne ARW. Mehrere ARWs mit gleichem Basename, nicht normalisierbare Unicode-Namen, nicht eindeutige Inventare oder eine nicht dokumentierte Umbenennung blockieren Phase 2 mit `FAILED_VALIDATION`. Bei einer Blockade wird kein ARW gelöscht.
+Beispiel für YAML:
 
-Eine bewusst unterstützte Umbenennung benötigt vor Phase 2 einen im Phase-1-Manifest hinterlegten `arw_binding` mit altem Basename, neuem Pfad, Hash des JPG und ursprünglichem ARW-Fingerprint. Ohne diesen Beleg schützt ein umbenanntes JPG kein ARW. Symlinks, Hardlink-Sonderfälle und Pfade außerhalb von `base_dir` werden abgewiesen.
-
-## Phase- und Zustandsmaschine
-
-Zulässige technische Zustände sind ausschließlich:
-
-```text
-DISCOVERED -> VALIDATED -> PHASE1_RUNNING -> REVIEW_READY
-REVIEW_READY -> HUMAN_APPROVED -> PHASE2_VALIDATING
-PHASE2_VALIDATING -> ARW_ARCHIVE_STAGED -> ARW_ARCHIVE_VERIFIED
-ARW_ARCHIVE_VERIFIED -> ARW_DELETE_RUNNING -> COMPLETED
+```yaml
+# photo-workflow | Datei: config/config.example.yaml | Mitentwickler: MaiTai
+# Erstellt: 2026-07-28 | Projektversion: 7.2
+# Funktion: Vollständig kommentierte sichere Beispielkonfiguration.
 ```
 
-Fehlerzustände sind `BLOCKED_INCOMPLETE`, `FAILED_VALIDATION`, `FAILED_METADATA`, `FAILED_ARCHIVE`, `FAILED_DELETE`, `RECOVERY_REQUIRED` und `QUARANTINED`. Ein Fehlerstatus enthält `error_code`, `message`, `at`, `run_id`, `retryable` und einen Verweis auf Log und Manifest.
+Ein automatisierter Test prüft für alle erfassten Textdateien außerhalb von `legacy/` Header-Präsenz, Projektname, relativen Dateinamen, Mitentwickler, ISO-Datum, Versionswert und Beschreibung. Die CI schlägt bei fehlenden oder inkonsistenten Headern fehl. Die Versionsangabe muss dem kanonischen Versionswert entsprechen, der zentral aus `pyproject.toml` oder einer gleichwertigen einzigen Projektversionsquelle gelesen wird. Eine Änderung der Projektversion aktualisiert diese Quelle, die relevanten Header, die Spezifikationsmetadaten, `CHANGELOG.md`, Container-Metadaten und die Dokumentation im selben Änderungssatz.
 
-Phase 1 führt in fester Reihenfolge aus: Eingang sperren und auf Stabilität prüfen; Batch-ID/Datenname validieren; ARWs verschieben; Original-JPG-Archiv erzeugen und validieren; Inventar, Scores, Sternrating und Serienkorrektur ermitteln; Metadaten schreiben und rücklesen; `culling_scores.csv` sowie Phase-1-Manifest schreiben; Dateien einsortieren; Batch atomar nach `TEMP_IMAGES` übergeben und `REVIEW_READY` schreiben.
+Jede aktive Python-Datei besitzt zusätzlich einen Modul-Docstring mit Verantwortung, wichtigen Ein-/Ausgaben, Sicherheitsgrenzen und optionalen Abhängigkeiten. Jede öffentliche Klasse, Funktion und CLI-Subcommand-Implementierung dokumentiert Zweck, Parameter, Rückgabewert und fachliche Fehler. Nichttriviale Zustands-, Transaktions-, Lösch-, Cache- und Bewertungslogik erklärt das *Warum*; sicherheitsrelevante Stellen werden mit `SICHERHEIT:` beziehungsweise `DATENINTEGRITÄT:` markiert.
 
-Der manuelle Move nach `TEMP_DONE` ist der alleinige Übergang von `REVIEW_READY` zu `HUMAN_APPROVED`. Phase 2 darf einen Batch nur bearbeiten, wenn Manifest, Konfigurationsfingerprint, Dateifingerprints und Ordnerprotokoll plausibel sind. Der Hauptordner bedeutet immer `keep`, `_Review/` bedeutet `review`, `_Rejected/` bedeutet `reject`; ein gültiges Manual-Keep-Signal hat Vorrang. `auto_keep_min_rating` wird in Phase 2 nicht verwendet.
+## Face-Backend-Vertrag
 
-Jeder Zustand wird mittels Write-to-temp, `fsync`, atomarem Rename und anschließendem Directory-`fsync` persistiert, soweit das Dateisystem dies unterstützt. Ein Prozess schreibt vor jeder Mutation seinen `run_id`-Lock; konkurrierende Läufe dürfen denselben Batch nicht bearbeiten. Ein abgelaufener Lock wird nur nach dokumentierter Besitzer-, PID-/Host- und Zeitprüfung als stale markiert, nie blind gelöscht.
+Die Auswahl erfolgt ausschließlich durch `family_recognition.enabled`, `family_recognition.backend` und `family_recognition.execution_profile`. `enabled` ist ein globaler Feature-Schalter und kein Backend-Typ. Bei `enabled: false` entstehen keine Face-Analyse, kein Cache-Rebuild, keine Face-Metadaten und keine Kandidaten.
 
-## Archiv-, Lösch- und Wiederaufnahmevertrag
+```python
+class FaceBackend(Protocol):
+    name: str
+    adapter_version: str
+    metric: MatchMetric
 
-Für entbehrliche ARWs erstellt Phase 2 zunächst einen unveränderlichen Archivplan. Das temporäre Archiv enthält für jede Datei relativen Pfad, Größe und SHA-256. Nach dem Schreiben werden ZIP-Lesbarkeit, sichere Memberpfade, erwartete Dateiliste, Größe und SHA-256 aller Einträge geprüft. Erst dann erfolgt die atomare Aktivierung zur finalen ZIP und die Persistierung von `archive_manifest.json`.
-
-Wenn `SAVE/<batch>_SORT_ARW.zip` existiert und sein Archivmanifest mit geplantem Inhalt, Entry-Hashes und Konfigurationsfingerprint exakt übereinstimmt, wird das vorhandene Archiv wiederverwendet. Existiert es, ist aber nicht identisch oder nicht vertrauenswürdig, wird die erste freie Datei `SAVE/<batch>_SORT_ARW_EXTRA_<n>.zip` verwendet. Eine `_EXTRA_`-Datei ist somit ausschließlich ein Kollisionsschutz. Sie erzeugt zwingend `ZIP_TARGET_COLLISION` in Log, Run-Summary und `zip_conflicts`.
-
-ARWs dürfen erst nach `ARW_ARCHIVE_VERIFIED` gelöscht werden. Jede Löschung wird unmittelbar mit ARW-Fingerprint, Archivpfad, Archivhash und Zeitstempel in `batch_state.json` ergänzt. Bei Absturz nach Archivvalidierung, aber vor oder während der Löschung, löscht `recover_batch` nur noch existierende, exakt im verifizierten Archivmanifest enthaltene ARWs. Jede Abweichung führt zu `RECOVERY_REQUIRED`; es wird keine heuristische Bereinigung versucht. Nach vollständiger dokumentierter Löschung wird ein leeres `ARW/` entfernt und `COMPLETED` geschrieben.
-
-## Persistente Datenverträge
-
-Alle JSON-Artefakte haben mindestens `schema_version`, `batch_id`, `created_at`, `run_id` und `config_fingerprint`. Zeiten sind UTC im RFC-3339-Format. Hashes sind SHA-256 in hexadezimaler Kleinschreibung. `null` bedeutet unbekannt/nicht verfügbar; 0 ist ein gemessener numerischer Wert.
-
-```text
-_workflow_data/
-  batches/<batch_id>/phase1_manifest.json
-  batches/<batch_id>/batch_state.json
-  batches/<batch_id>/review_decision_record.json
-  batches/<batch_id>/archive_manifest.json
-  locks/<batch_id>.lock
-  run_summaries/<run_id>.json
-  calibration/decision_index.jsonl
-  calibration/calibration_summary.json
+    def diagnose(self) -> FaceBackendDiagnosis: ...
+    def detect_and_embed(self, image_path: Path) -> list[FaceEmbedding]: ...
+    def compare(
+        self,
+        embedding: FaceEmbedding,
+        references: dict[str, Sequence[FaceEmbedding]],
+    ) -> FaceMatch: ...
 ```
 
-`SAVE/culling_scores.csv` ist UTF-8, RFC-4180-konform, hat eine Header-Zeile und mindestens: `image_id`, `relative_path`, `base_score`, `eye_score`, `personal_score`, `family_score`, `final_score`, `star_rating`, `score_decision`, `final_decision`, `decision_reason`, `series_id`, `series_size`, `series_rank`, `series_best`, `series_margin_to_best`, `model_version`, `config_fingerprint`. Alte Namen dürfen nur lesend migriert werden; geschrieben wird ausschließlich dieser Name.
+`MatchMetric` enthält `name`, `direction` (`higher_is_better` oder `lower_is_better`) und `threshold`. `FaceMatch` enthält mindestens `status`, optional `person_slug`, `score`, `metric`, `second_best_score` und `backend`. Keine Ausgabedatei enthält Roh-Embeddings, unbekannte Personen, absolute Modellpfade oder Bildinhalte.
 
-Minimalform des `archive_manifest.json`:
+| Backend-ID | Profil | Status | Pflicht |
+|---|---|---|---|
+| `opencv_yunet_sface_cpu` | `cpu` | `stable` | Ja, NAS-Standard |
+| `onnx_face_cpu` | `cpu` | `advanced` | Nein |
+| `onnx_face_cuda` | `cuda` | `advanced` | Nein |
+| `face_recognition_dlib_cpu` | `cpu` | `experimental` | Nein |
+| `insightface_onnx` | `cpu` oder `cuda` | `experimental` | Nein |
 
-```json
-{
-  "schema_version": "1.0",
-  "batch_id": "2026-07-24",
-  "archive_kind": "sort_arw",
-  "archive_path": "SAVE/2026-07-24_SORT_ARW.zip",
-  "archive_sha256": "<sha256>",
-  "archive_verified_at": "2026-07-24T12:00:00Z",
-  "entries": [{"relative_path":"ARW/DSC00001.ARW","sha256":"<sha256>","size_bytes":12345678,"deletion_eligible":true}],
-  "config_fingerprint": "<sha256>"
-}
-```
+Ein unbekanntes Backend, falsches Profil, fehlende Bibliothek, fehlender Provider, fehlendes Modell, Modellhash-Fehler oder unklare Metrik ist ein kontrollierter Fehler. Es gibt keinen automatischen Fallback auf Backend, Modell, Provider, CPU oder Metrik. Ein optionales Backend darf nur registriert sein, wenn Adapter, Abhängigkeiten, Lizenzhinweise, Diagnose, Dokumentation und Tests tatsächlich geliefert werden.
 
-`review_decision_record.json` enthält pro Phase-1-Bild mindestens Phase-1-Prognose, finale menschliche Entscheidung, relative Endposition, Bildhash, Teilmerkmale, Modell-/Konfigurationsfingerprints und Zeitstempel. Es wird vor jeder ARW-Mutation geschrieben. `decision_index.jsonl` und `calibration_summary.json` sind ausschließlich rebuildbare Ableitungen aus diesen Batch-Records und werden nicht in Git eingecheckt.
+Bei `higher_is_better` gilt Match nur bei `score >= match_threshold` und `score - second_best_score >= min_best_second_margin`. Bei `lower_is_better` gilt Match nur bei `score <= match_threshold` und `second_best_score - score >= min_best_second_margin`. `null`, fehlender zweitbester Wert oder unklare Metrik erzeugen niemals einen Match oder Crop-Kandidaten.
 
-## Scoring, Serien und Family Recognition
+Ein Wechsel von Backend-ID, Adapterversion, Modellhash, Provider, Embedding-Dimension, Preprocessing, Metrikname oder Metrikrichtung ändert zwingend den Cache-Fingerprint. Caches und Embeddings unterschiedlicher Fingerprints dürfen nie gemischt oder verglichen werden. Vor produktiver Face-Auswertung nach einem solchen Wechsel sind `diagnose_face_backend` und `rebuild_family_cache` erfolgreich auszuführen.
 
-Alle Score-Komponenten liegen in [0,1] oder sind `null`; aktive Finalgewichte werden proportional auf 1,0 renormiert. `base_score` besteht nur aus Schärfe, Ästhetik, Belichtung und Referenzscore. `eye_score` ist ein separater optionaler Finalbaustein und darf nicht als Base-Untergewicht erscheinen. `score_decision` folgt den beiden Schwellen; Sternrating folgt ausschließlich den Score-Bändern. `final_decision` nach Phase 1 dokumentiert die Serienkorrektur, während die menschliche Phase-2-Entscheidung das verbindliche Endergebnis ist.
+## Konfigurations- und Datenvertrag
 
-Die Serienerkennung arbeitet ausschließlich innerhalb eines Batches, muss deterministisch sein und liefert `series_id`, `series_size`, `series_rank`, `series_best` und `series_margin_to_best`. Das Serienbestbild darf die Score-Klasse höchstens um eine Stufe verbessern. Andere Serienbilder dürfen nur aufgrund einer konfigurierten, geloggten Distanz zum Bestbild abgewertet werden. Fehlt die Serienanalyse, bleibt die Score-Entscheidung unverändert und der Grund wird protokolliert.
+`config/config.example.yaml` ist die vollständig kommentierte, versionierte Vorlage; lokale Werte liegen getrennt in `config/config.yaml` und gehören nicht in Git. Jeder Abschnitt besitzt einen mehrzeiligen Zweck-, Abhängigkeits- und Sicherheitskommentar. Jede Variable besitzt Zweck, Typ, erlaubte Werte oder Bereich, Einheit sofern relevant, Standardverhalten, Sicherheits-/Performancewirkung und Stabilitätsstatus.
 
-Family Recognition nutzt im ersten Backend `opencv-contrib-python-headless`, YuNet und SFace mit Cosine Similarity. Bei `enabled: false`, fehlendem Modell, fehlendem `match_threshold`, Mehrdeutigkeit oder Backendfehler liefert sie keinen Family-Score und keine Personentags; der Workflow läuft mit Warnung weiter. Erst ein eindeutig kalibrierter Match darf, bei aktiviertem Schutz, `reject` maximal zu `review` anheben. Eine automatische Identitätsbestätigung, Referenzaufnahme oder Unknown-to-Known-Überführung ist verboten.
+Kanonisch sind mindestens `workflow.phase_execution`, `automation.mode`, `automation.automatic_phase2_enabled`, `family_recognition.backend`, `family_recognition.execution_profile`, `family_recognition.match_threshold` und `family_recognition.backends.<backend_id>`. `culling.decision_mode` und `similarity_metric` sind nur lesende Migrationsaliase; bei einem abweichenden kanonischen Wert schlägt die Validierung fehl.
 
-## Eingebettete Metadaten
+Steuerdateien verwenden UTF-8, UTC-Zeitstempel mit `Z`, positive `schema_version`, Validierung vor Nutzung und atomisches Schreiben auf demselben Dateisystem. Ungültige oder unbekannte Steuerdateien werden nicht überschrieben, sondern mit Grund und Hash nach `runtime/quarantine/` kopiert und blockieren die unsichere Folgeaktion.
 
-Der Normalweg schreibt direkt in JPG per `exiftool`; XMP-Sidecars entstehen nur bei einem später explizit aktivierten Recovery-Modus. Exiftool wird ohne Backup-Dateien aufgerufen. Vor dem Schreiben wird die Quelldatei inventarisiert, danach werden die verwalteten Felder zurückgelesen. Bei jeder Abweichung entsteht `FAILED_METADATA`; der Batch darf nicht zu Phase 2 fortschreiten.
+## Phase-, Archiv- und Wiederaufnahmevertrag
 
-| Information | Zielfeld | Update-Regel |
+Ein Batch verwendet `ARW/`, `SAVE/`, `Review/` und `Rejected/`. Phase 1 läuft zwingend: Stabilität/Namens-/Lock-/Symlink-Prüfung, Datumsnormalisierung, ARW-Auslagerung, validiertes JPG-Archiv, Features und Score, Manual Keep, Serienlogik, Metadaten/CSV/Manifest, Ablage der JPGs und atomare Übergabe nach `TEMP_IMAGES` oder nur bei erfüllten Automatik-Gates nach `TEMP_DONE`.
+
+Die finale Entscheidung lautet zwingend: valides Manual Keep = `keep`; Bild in `Rejected/` = `reject`; Bild in `Review/` = `review`; Bild im Hauptordner = `keep`; fehlender, mehrfacher oder widersprüchlicher Zustand = `review_state_invalid`. Bei `review_state_invalid` sind alle Phase-2-ARW-Aktionen blockiert.
+
+Ein manuell freigegebener Batch folgt: `phase1_completed` -> `review_comparison_pending` -> `review_record_committed` -> `calibration_index_committed` -> `phase2_archiving` -> `phase2_completed`. Ein automatischer Batch folgt: `phase1_completed` -> `automatic_handoff` -> `phase2_archiving` -> `phase2_completed` und erzeugt keinen menschlichen Trainingsrecord.
+
+Ein ARW wird nur nach aktivem gleichnamigem JPG erhalten. Ein entbehrliches ARW darf erst nach Erstellung, Lesbarkeitsprüfung, Dateilistenprüfung, Hashing und atomarer Aktivierung des zugehörigen ARW-Archivs gelöscht werden. Ein Abbruch vor der Aktivierung löscht kein ARW; danach setzt die Wiederaufnahme nur manifestierte, noch offene Löschschritte idempotent fort.
+
+## Reporting, Tests und Abnahme
+
+Die Run-Summary enthält Run-ID, Batch-IDs, Konfigurationsfingerprint, angeforderten und wirksamen Automatikmodus, Backend- und Cache-Status, Keep/Review/Reject-Zähler, Archive und Hash-Prüfungen, `user_actions_required` und `automation_readiness`. Bei aktiver Face-Funktion enthält sie Backend-ID, Metrik und Cache-Version, jedoch keine Roh-Embeddings, unbekannten Personen oder absoluten Pfade.
+
+| ID | Szenario | Sollresultat |
 |---|---|---|
-| Sternrating | `XMP:Rating` | Wert 0 bis 5 ersetzen |
-| Workflow-/Entscheidungs-/Serien-/Familientags | `XMP-dc:Subject` | Nur workflow-eigene Präfixe ersetzen; fremde Keywords erhalten |
-| Exakte Scores und Teilwerte | Kein Bildfeld | Nur CSV, Manifeste und JSON |
+| ACC-01 | Stabiler Eingang | Phase 1 erzeugt Manifest, JPG-Archiv, CSV und `TEMP_IMAGES`-Übergabe |
+| ACC-02 | Wachsender, gesperrter oder ungültig benannter Eingang | Keine Mutation, sichtbarer Blocker |
+| ACC-03 | Bild aus `Rejected/` zurück im Hauptordner | Finale Entscheidung `keep`, passendes ARW bleibt erhalten |
+| ACC-04 | Metadaten-Rückleseprüfung oder ARW-Archivprüfung fehlschlägt | Keine erfolgreiche Übergabe beziehungsweise keine ARW-Löschung |
+| ACC-05 | Absturz vor/nach Archivaktivierung | Vorher keine Löschung; nachher nur sichere idempotente Wiederaufnahme |
+| ACC-06 | Ungültige Steuerdatei | Quarantäne, Blockierung, keine stille Überschreibung |
+| ACC-07 | Face-Funktion deaktiviert | Keine Face-Artefakte oder Personentags |
+| ACC-08 | Fehlendes oder unzulässiges Face-Backend | Kontrollierter Fehler, kein Fallback |
+| ACC-09 | Backend-/Modell-/Metrikwechsel | Neuer Cache-Fingerprint, keine Cache- oder Embedding-Mischung |
+| ACC-10 | Cosine- und Distanzmetrik | Schwelle und Margin werden richtungskorrekt angewendet |
+| ACC-11 | CUDA-Backend ohne GPU-Image | Diagnosefehler, kein CPU-Fallback |
+| ACC-12 | Beschädigter Kalibrierungsindex | Rebuild aus unveränderlichen Batch-Records |
+| ACC-13 | `automatic_phase2` ohne Readiness | Sicherer Hold; Batch bleibt unverändert oder in `TEMP_IMAGES` |
+| ACC-14 | Header-Prüfung | CI erkennt fehlende, falsche oder versionsinkonsistente Dateiheader |
+| ACC-15 | Ziel-NAS-Pilot | Mounts, UID/GID, Scheduler, Restore, Abbruch und Wiederaufnahme dokumentiert bestanden |
 
-Die ausschließlich neu geschriebenen Keywords lauten `workflow:ai_cull`, `workflow:model:<model_id>`, `decision:predicted:<keep|review|reject>`, `decision:final:<keep|review|reject>`, `series:id:<series_id>`, `series:role:<best|member>`, `family:match:<true|false>`, `person:<person_slug>`, `score_band:final:<0..5>` und `whatsapp:manual_keep`.
-
-## Reporting, Fehler und Exit-Codes
-
-Jeder Lauf erzeugt eine JSON-Run-Summary und eine kurze Scheduler-Ausgabe. `automation_readiness` enthält mindestens `status`, `compatible_reviewed_batches`, `compatible_reviewed_images`, `terminal_agreement`, `reject_to_keep_rate`, `reject_to_review_rate`, `review_rate`, `trend`, `recommendation`, `reasons` und `next_action`. Sie darf nur empfehlen; sie verändert keine Konfiguration.
-
-Exit-Code 0 bedeutet vollständig erfolgreich ohne Blocker. Exit-Code 2 bedeutet validierungsbedingt nicht ausgeführte Batches; 3 bedeutet recoverable Fehler ohne ARW-Löschung; 4 bedeutet mindestens ein Batch in `RECOVERY_REQUIRED` oder `FAILED_DELETE`; 5 bedeutet Konfigurationsfehler; 6 bedeutet interne, unerwartete Ausnahme. Ein Einzelbatchfehler darf andere unabhängige Batches nicht gefährden, muss aber in der Gesamtsummary erscheinen.
-
-## Abnahme- und Testmatrix
-
-| ID | Prüfszenario | Verbindliches Sollresultat |
-|---|---|---|
-| ACC-01 | Stabiler vollständiger Eingang in `TEMP_SD` | Phase 1 erzeugt Manifest, Archiv, CSV und übergibt nach `TEMP_IMAGES` |
-| ACC-02 | Noch wachsender oder gesperrter Eingang | Keine Mutation; Zustand `BLOCKED_INCOMPLETE` |
-| ACC-03 | Ungültiger Legacy- oder Volljahresname | `FAILED_VALIDATION`; keine Datei wird gelöscht |
-| ACC-04 | JPG aus `_Rejected/` zurück in Hauptordner | Phase 2 bewertet es final als `keep`; passendes ARW bleibt |
-| ACC-05 | Metadaten-Rücklesetest fehlerhaft | `FAILED_METADATA`; keine Übergabe zu Phase 2 |
-| ACC-06 | Archiv kann nicht vollständig validiert werden | `FAILED_ARCHIVE`; keine ARW-Löschung |
-| ACC-07 | Identisches bestehendes `SORT_ARW.zip` | Wiederverwendung, kein `_EXTRA_`-Archiv |
-| ACC-08 | Abweichendes bestehendes `SORT_ARW.zip` | Erstes freies `_EXTRA_<n>`; `ZIP_TARGET_COLLISION` und `zip_conflicts` |
-| ACC-09 | Crash nach Archivvalidierung, vor ARW-Löschung | Recovery löscht nur manifestierte noch vorhandene ARWs |
-| ACC-10 | Mehrdeutige JPG-/ARW-Paarbildung | `FAILED_VALIDATION`; keine ARW-Löschung |
-| ACC-11 | Family Backend deaktiviert/unkalibriert | Kein Family-Score und keine Personentags |
-| ACC-12 | Readiness erfüllt alle Schwellen | Nur Empfehlung, keine automatische Aktivierung |
-| ACC-13 | Pfadflucht, Symlink oder unsicheres ZIP | Blockade oder Quarantäne innerhalb von `TEMP_ERROR` |
-| ACC-14 | NAS-Pilot mit Kopien realer Batches | Manuell dokumentierter Nachweis für Mounts, UID/GID, Scheduler, Last, Restore und Recovery |
-
-Die Implementierung gilt erst als abgenommen, wenn alle automatisierten Fälle reproduzierbar bestehen und ACC-14 auf der realen Synology NAS dokumentiert wurde. Ein bestandener Unit- oder Container-Test ersetzt den NAS-Pilot nicht.
+Die Abnahme setzt voraus, dass Unit-, Integrations-, Konfigurations-, Header-, Sicherheits- und Wiederaufnahmetests reproduzierbar bestehen. Die CI prüft mindestens Konfigurationsvalidierung, Header-Regeln, Format/Lint, Tests und die Dokumentationskonsistenz von CLI-Namen, Backend-IDs, Konfigurationsschlüsseln und Projektversion.
 
 ## Deployment-Gates
 
-Docker und DSM Task Scheduler dürfen nur mit persistierend gemountetem `base_dir`, dediziertem Least-Privilege-Benutzer, schreibbaren Unterordnern für `_workflow_data` und nachvollziehbarer UID/GID betrieben werden. Modelle, Referenzbilder, Caches, Logs, Run-Summaries und Archive liegen außerhalb des Container-Images auf dem NAS. Geheimnisse und produktive Pfade gehören nicht in Git oder Debug-Konfigurationen.
+Vor Produktivbetrieb müssen `validate_config` und bei aktiver Gesichtsfunktion `diagnose_face_backend` erfolgreich enden. Modelle, Referenzen, Caches, Logs, Zustände und Archive liegen auf persistenten NAS-Mounts. Docker- und optionale GPU-Images sind getrennt dokumentiert, möglichst mit eingeschränkter UID/GID ausführbar und ohne private Daten im Image. Ein Wiederherstellungstest eines validierten ARW-Archivs sowie Abbruchtests vor und nach Archivaktivierung sind nachzuweisen. `docs/MANUAL_DE.md` erklärt alle produktiven Funktionen, Fehlerwege, Backends, Modellwechsel, Diagnose und Cache-Rebuilds vollständig.
 
-Vor Freigabe sind mindestens zu prüfen: Konfigurationsvalidierung, Paket-CLI-Hilfe, Unit- und Integrationstests, Pfad-/ZIP-Sicherheitstests, Container-Dependency-Scan, Restore eines validierten ARW-Archivs, paralleler Scheduler-Start, Strom-/Prozessabbruch während jeder Phase-2-Transaktionsstufe sowie Ressourcenverhalten auf der Ziel-NAS.
