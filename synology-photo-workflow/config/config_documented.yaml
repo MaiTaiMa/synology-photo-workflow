@@ -5,12 +5,12 @@
 # Pfade der fachlichen Ein- und Ausgänge sowie der globalen Prozesssperre.
 paths:
   basedir: data/TEMP # Erlaubtes Wurzelverzeichnis; alle TEMP-Pfade müssen darunter liegen.
-  tempsd: data/TEMP/TEMPSD # Eingang: neue, noch nicht verarbeitete Kameraordner.
-  tempimages: data/TEMP/TEMPIMAGES # Ergebnis von Phase 1 zur manuellen Bildsichtung.
-  tempdone: data/TEMP/TEMPDONE # Nur bewusst freigegebene Batches für die irreversible Phase 2.
-  temperror: data/TEMP/TEMPERROR # Quarantäne für unsichere, beschädigte oder ungültige Batches.
-  manualkeepinbox: data/TEMP/MANUALKEEP/inbox # Vorab gewählte externe JPGs für sichere Manual-Keep-Zuordnung.
-  manualkeepused: data/TEMP/MANUALKEEP/used # Erfolgreich zugeordnete Manual-Keep-Dateien.
+  tempsd: data/TEMP/TEMP_SD # Eingang: neue, noch nicht verarbeitete Kameraordner.
+  tempimages: data/TEMP/TEMP_IMAGES # Ergebnis von Phase 1 zur manuellen Bildsichtung.
+  tempdone: data/TEMP/TEMP_DONE # Nur bewusst freigegebene Batches für die irreversible Phase 2.
+  temperror: data/TEMP/TEMP_ERROR # Quarantäne für unsichere, beschädigte oder ungültige Batches.
+  manualkeepinbox: data/TEMP/MANUAL_KEEP/inbox # Vorab gewählte externe JPGs für sichere Manual-Keep-Zuordnung.
+  manualkeepused: data/TEMP/MANUAL_KEEP/used # Erfolgreich zugeordnete Manual-Keep-Dateien.
   lockfile: data/TEMP/.workflow.lock # Sperrdatei gegen parallele Python-Workflow-Läufe.
 
 # Steuerung von Ausführungsreihenfolge, Stabilitätsprüfung, Zeitbudget und Wiederaufnahme.

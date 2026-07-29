@@ -1,11 +1,11 @@
 paths:
   basedir: data/TEMP
-  tempsd: data/TEMP/TEMPSD
-  tempimages: data/TEMP/TEMPIMAGES
-  tempdone: data/TEMP/TEMPDONE
-  temperror: data/TEMP/TEMPERROR
-  manualkeepinbox: data/TEMP/MANUALKEEP/inbox
-  manualkeepused: data/TEMP/MANUALKEEP/used
+  tempsd: data/TEMP/TEMP_SD
+  tempimages: data/TEMP/TEMP_IMAGES
+  tempdone: data/TEMP/TEMP_DONE
+  temperror: data/TEMP/TEMP_ERROR
+  manualkeepinbox: data/TEMP/MANUAL_KEEP/inbox
+  manualkeepused: data/TEMP/MANUAL_KEEP/used
   lockfile: data/TEMP/.workflow.lock
 workflow:
   phaseexecution: phase1only
