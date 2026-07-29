@@ -53,7 +53,7 @@ Hauptordner zurueckgelegtes JPG ist wieder aktiv und schuetzt sein passendes ARW
 | Abgeleitete Medien | Crops, ZIPs, Vorschauen, Kopien | Nur mit Herkunft, Hash und dokumentierter Aktion |
 | Steuerdaten | Manifeste, Zustaende, Logs, Indizes, Caches | Schema-validiert, atomar, rekonstruierbar |
 
-Abweichende Schreibweisen (z. B. `TEMP_IMAGES`, `TEMP_DONE`, `TEMP_ERROR`, `WORKFLOW_DATA`, `faces/kind-1`, `new_refs`, `not_used`, historisches `culling_scores.csv`) duerfen ausschliesslich lesend fuer die Migration akzeptiert werden. Sie duerfen weder neu erzeugt noch in Summaries, Manifesten, Dokumentation, Beispielkonfiguration oder Scheduler-Befehlen ausgegeben werden. Neue Artefakte verwenden nur die oben genannten kanonischen Namen.
+Abweichende Schreibweisen (z. B. `TEMPIMAGES`, `TEMPDONE`, `TEMPERROR`, `WORKFLOWDATA`, `faces/kind-1`, `new_refs`, `not_used`, historisches `culling_scores.csv`) duerfen ausschliesslich lesend fuer die Migration akzeptiert werden. Sie duerfen weder neu erzeugt noch in Summaries, Manifesten, Dokumentation, Beispielkonfiguration oder Scheduler-Befehlen ausgegeben werden. Neue Artefakte verwenden nur die oben genannten kanonischen Namen.
 
 Eine Migration inventarisiert Quelle und Ziel, prueft Pfad und Fingerprint, schreibt ein Auditprotokoll und erzeugt keine stillen Ueberschreibungen. Ein Batch darf nicht gleichzeitig unter Alias- und kanonischem Pfad aktiv sein.
 
