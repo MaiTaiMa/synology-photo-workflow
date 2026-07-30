@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: app/tests/test_nas_example.py
+Datei: tests/test_nas_example.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
