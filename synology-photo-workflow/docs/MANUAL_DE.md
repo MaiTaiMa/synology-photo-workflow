@@ -459,6 +459,56 @@ Das Projekt trainiert im Standardbetrieb kein großes allgemeines neuronales Mod
 
 Damit gilt: Das Projekt "lernt" nicht autonom alles selbst, sondern nutzt kontrollierte, bestätigte Datenquellen. Manuell eingegriffen werden muss immer dann, wenn Referenzen erweitert, Modelle getauscht, neue Schwellen festgelegt oder automatische Vorschlagsfunktionen freigegeben werden sollen.
 
+### Optionaler CLIP-Adapter (OpenAI CLIP / taste_model)
+
+Der Workflow enthält einen optionalen CLIP-Adapter, der einen zusätzlichen `reference_score` als Teil des Basis-Scores liefert. Dieser Adapter ist im Standardbetrieb **deaktiviert** (`culling.taste_model.enabled: false`) und benötigt keine Netzwerkverbindung; er läuft vollständig lokal mit einem selbst platzierten Modell.
+
+#### Was CLIP macht
+
+CLIP (Contrastive Language–Image Pre-Training) ist ein von OpenAI veröffentlichtes Modell, das Bilder und Texte in denselben Vektorraum einbettet. Der Adapter nutzt diese Eigenschaft, um ein Foto gegen eine Liste positiver und negativer Textbeschreibungen (sogenannte Prompts) zu bewerten. Ein Bild, das visuell den positiven Prompts ähnelt (z. B. *„a beautiful sharp photograph"*), erhält einen höheren Score; ein Bild, das den negativen Prompts ähnelt (z. B. *„blurry photo"*), erhält einen niedrigeren.
+
+Das Ergebnis fließt als `reference_score` mit dem in `culling.base_weights.reference_score` konfigurierten Gewicht (Standard: `0.10`) in den `base_score` ein. Es beeinflusst damit mittelbar den Gesamtscore, trifft aber **keine eigenständige Entscheidung** über Keep oder Reject.
+
+#### Voraussetzungen
+
+1. **Modell beschaffen:** Ein CLIP-kompatibles Modell im `safetensors`-Format herunterladen (z. B. `openai/clip-vit-base-patch32` von [Hugging Face](https://huggingface.co/openai/clip-vit-base-patch32/tree/main)) und alle zugehörigen Dateien (`model.safetensors`, `config.json`, `tokenizer.json`, `vocab.json`, `merges.txt`, `preprocessor_config.json`) in das Verzeichnis `WORKFLOW_DATA/models/taste/` legen.
+
+2. **Abhängigkeiten installieren:**
+   ```sh
+   pip install -r requirements-clip.txt
+   ```
+   Dieser Schritt installiert `torch`, `transformers` und `Pillow`. Der Hauptworkflow läuft weiterhin ohne diese Pakete, solange `enabled: false` gesetzt ist.
+
+3. **Pfad prüfen:** `culling.taste_model.model_path` in `config/config.yaml` zeigt auf die `model.safetensors`-Datei. `CLIPModel.from_pretrained()` liest dabei das **gesamte Elternverzeichnis** aus – alle Modelldateien müssen also im selben Ordner liegen.
+
+#### Aktivierung
+
+```yaml
+culling:
+  taste_model:
+    enabled: true
+    backend: clip_aesthetic
+    model_path: ../NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/taste/model.safetensors
+    positive_prompts:
+      - a beautiful sharp photograph
+      - professional photography
+      - perfect exposure and composition
+    negative_prompts:
+      - blurry photo
+      - bad photo
+      - overexposed underexposed
+```
+
+Vor dem ersten Produktionslauf empfiehlt sich ein Diagnoseaufruf über `clip_taste_adapter.diagnose()`, um sicherzustellen, dass Modell und Abhängigkeiten korrekt geladen werden.
+
+#### Fehlerverhalten
+
+Wenn das Modell nicht geladen werden kann oder `torch`/`transformers` nicht installiert sind, gibt der Adapter `reference_score: None` zurück. Der Workflow läuft in diesem Fall **ohne Unterbrechung weiter** – CLIP-Fehler blockieren keine Batch-Verarbeitung.
+
+#### Prompts anpassen
+
+Die Prompts in `positive_prompts` und `negative_prompts` sind vollständig konfigurierbar und sollten dem eigenen Fotostil angepasst werden. Spezifischere Beschreibungen (z. B. *„sharp landscape photograph with golden hour light"*) können die Aussagekraft des Scores verbessern. Eine Änderung der Prompts beeinflusst den `reference_score` aller neu verarbeiteten Bilder – bestehende gespeicherte Scores werden dadurch nicht rückwirkend geändert.
+
 ## Inbetriebnahme Schritt für Schritt
 
 ### Variante 1: Betrieb mit Docker und NAS
