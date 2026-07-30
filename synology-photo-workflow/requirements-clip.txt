@@ -1,0 +1,8 @@
+# Synology Photo Workflow | requirements-clip.txt
+# Mitentwickler: MaiTai | Erstellt: 2026-07-30 | Projektversion: 7.7.0
+# Funktion: Optionale ML-Abhaengigkeiten fuer den CLIP-Taste-Adapter (personal_score).
+# Installation: pip install -r requirements-clip.txt
+# Hinweis: Nur benoetigt wenn culling.taste_model.enabled: true in config.yaml.
+torch>=2.0,<3
+transformers>=4.40,<5
+Pillow>=10,<11
