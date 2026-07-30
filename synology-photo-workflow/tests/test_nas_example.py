@@ -3,7 +3,7 @@ Datei: tests/test_nas_example.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
-Funktion: Automatisierte Prüfung der Projektlogik, Skripte und Verträge.
+Funktion: Prüft die vollständige NAS-Beispielverzeichnisstruktur auf Vollständigkeit.
 """
 
 from pathlib import Path

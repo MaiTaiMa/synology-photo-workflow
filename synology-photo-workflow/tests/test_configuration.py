@@ -3,7 +3,7 @@ Datei: tests/test_configuration.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
-Funktion: Automatisierte Prüfung der Projektlogik, Skripte und Verträge.
+Funktion: Prüft Ladeverhalten, Aliasmigrationen und Pfadvalidierung der Konfiguration.
 """
 
 from pathlib import Path
