@@ -13,7 +13,7 @@ Personenbezogene Daten, Bilder oder Laufzeitartefakte gehoeren nicht in diesen O
 
 ## Unterordner
 
-- **faces/** – Gesichtserkennungs-Modelle (z. B. `face_detection_yunet_2023mar.onnx`, `face_recognition_sface_2021dec.onnx`)
+- **face/** – Gesichtserkennungs-Modelle (z. B. `face_detection_yunet_2023mar.onnx`, `face_recognition_sface_2021dec.onnx`)
 - **taste/** – CLIP-Modell-Gewichte fuer den optionalen personal_score-Adapter (z. B. `model.safetensors`)
 
 ## Hinweis
