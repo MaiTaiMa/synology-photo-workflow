@@ -1,0 +1,66 @@
+# Synology Photo Workflow | .gitignore (root)
+# Mitentwickler: MaiTai | Erstellt: 2026-07-30 | Projektversion: 7.7.0
+# Funktion: Schliesst alle persoenlichen Laufzeit- und Mediendaten global aus.
+
+# -----------------------------------------------------------------------
+# NAS_EXAMPLE/TEMP: Laufzeit-Inhalte aller Arbeitsordner ignorieren.
+# .gitkeep-Platzhalter und README.md bleiben ausdruecklich erhalten.
+# -----------------------------------------------------------------------
+NAS_EXAMPLE/TEMP/TEMP_SD/**
+NAS_EXAMPLE/TEMP/TEMP_IMAGES/**
+NAS_EXAMPLE/TEMP/TEMP_DONE/**
+NAS_EXAMPLE/TEMP/TEMP_ERROR/**
+NAS_EXAMPLE/TEMP/MANUAL_KEEP/**
+
+# WORKFLOW_DATA: Unterordner-Inhalte ignorieren, Struktur behalten
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/faces/**
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/runtime/**
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/samples/**
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/faces/**
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/taste/**
+
+# Ausnahmen: .gitkeep-Platzhalter und README.md behalten
+!NAS_EXAMPLE/TEMP/TEMP_SD/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_IMAGES/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_DONE/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_ERROR/.gitkeep
+!NAS_EXAMPLE/TEMP/MANUAL_KEEP/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/faces/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/runtime/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/samples/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/faces/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/taste/.gitkeep
+!**/README.md
+
+# -----------------------------------------------------------------------
+# Bilder und RAW-Dateien - global, egal wo im Repo
+# -----------------------------------------------------------------------
+*.arw
+*.ARW
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
+
+# -----------------------------------------------------------------------
+# Modell-Gewichte und biometrische Daten - niemals ins Repo
+# -----------------------------------------------------------------------
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bin
+faces/
+**/faces/
+models/
+**/models/
+
+# -----------------------------------------------------------------------
+# Python- und Tool-Artefakte
+# -----------------------------------------------------------------------
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.zip
+.env

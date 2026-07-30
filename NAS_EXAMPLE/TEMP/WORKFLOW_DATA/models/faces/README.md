@@ -1,5 +1,5 @@
-<!-- Projekt: Synology Photo Workflow; Pfad: NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/family/README.md; Rolle: Face-Backend-Modelle -->
-# family
+<!-- Projekt: Synology Photo Workflow; Pfad: NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/face/README.md; Rolle: Face-Backend-Modelle -->
+# faces
 
 Dieser Ordner hält die Modelle und Artefakte der optionalen Familien- und Gesichtserkennung. Hier liegen die Dateien, die das ausgewählte Face-Backend für Erkennung oder Vergleich benötigt, sofern die Funktion aktiviert und technisch abgenommen wurde. Der Ordner ist eng an das konfigurierte Backend, die Laufzeitprofile und die Diagnoselogik gebunden. Er darf nicht für allgemeine Bilddaten, Referenzlisten oder persönliche Favoriten verwendet werden. Wenn es sich um manuell bestätigte Persönlichkeits- oder Geschmackssamples handelt, gehört der Inhalt nach `models/taste` oder in die Samples-/Referenzstruktur, nicht hierher.
 

@@ -140,18 +140,39 @@ culling:
     - {min: 0.75, max: 0.89, rating: 4}
     - {min: 0.90, max: 1.00, rating: 5}
 
-  # taste_model: optionaler CLIP-Adapter fuer personal_score via safetensors-Modell.
+  # taste_model: optionaler CLIP-Adapter für personal_score via OpenAI CLIP-Modell (safetensors).
   # Mögliche Werte: enabled true/false; model_path absoluter oder relativer Pfad zur .safetensors-Datei.
-  # Auswirkung: enabled: false deaktiviert CLIP vollstaendig; reference_score bleibt dann None.
-  # Voraussetzung: pip install -r requirements-clip.txt sowie Modell unter model_path vorhanden.
+  # Auswirkung: enabled: false deaktiviert CLIP vollständig; reference_score bleibt dann None.
+  # Voraussetzung: pip install -r requirements-clip.txt sowie Modelldateien unter model_path vorhanden.
+  # Modellpfad: WORKFLOW_DATA/models/taste/ (alle CLIP-Dateien inkl. model.safetensors ablegen).
   taste_model:
+    # enabled: CLIP-Adapter aktivieren.
+    # Mögliche Werte: true oder false.
+    # Auswirkung: false lässt reference_score auf None; Workflow läuft ohne CLIP weiter.
     enabled: false
+
+    # backend: interner Bezeichner des Adapters.
+    # Mögliche Werte: clip_aesthetic (aktuell einziger implementierter CLIP-Adapter).
+    # Auswirkung: bestimmt welcher Adapter in clip_taste_adapter.py geladen wird.
     backend: clip_aesthetic
+
+    # model_path: Pfad zur model.safetensors-Datei des CLIP-Modells.
+    # Mögliche Werte: absoluter NAS-Pfad oder relativer Pfad zum Arbeitsverzeichnis.
+    # Auswirkung: CLIPModel.from_pretrained() liest das gesamte Elternverzeichnis aus.
+    # Hinweis: Relative Pfade werden gegen das Arbeitsverzeichnis beim Start aufgelöst, nicht gegen basedir.
     model_path: ../NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/taste/model.safetensors
+
+    # positive_prompts: Beschreibungen für visuell gute Fotos.
+    # Mögliche Werte: Liste aus natürlichsprachlichen Beschreibungen.
+    # Auswirkung: Höherer Anteil positiver CLIP-Wahrscheinlichkeit erhöht den reference_score.
     positive_prompts:
       - a beautiful sharp photograph
       - professional photography
       - perfect exposure and composition
+
+    # negative_prompts: Beschreibungen für visuell schlechte Fotos.
+    # Mögliche Werte: Liste aus natürlichsprachlichen Beschreibungen.
+    # Auswirkung: Höherer Anteil negativer CLIP-Wahrscheinlichkeit senkt den reference_score.
     negative_prompts:
       - blurry photo
       - bad photo

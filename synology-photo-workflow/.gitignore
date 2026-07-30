@@ -11,6 +11,7 @@ TEMP_IMAGES/
 TEMP_DONE/
 TEMP_ERROR/
 MANUAL_KEEP/
+NAS_EXAMPLE/
 *.zip
 *.arw
 *.ARW
@@ -19,3 +20,16 @@ MANUAL_KEEP/
 *.JPG
 *.JPEG
 .env
+
+# Gesichtsbilder und biometrische Daten – duerfen niemals ins Repo
+faces/
+**/faces/
+
+# Modell-Gewichte und safetensors
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bin
+models/
+**/models/
