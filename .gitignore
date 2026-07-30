@@ -1,0 +1,13 @@
+# Synology Photo Workflow | .gitignore (root)
+# Mitentwickler: MaiTai | Erstellt: 2026-07-30 | Projektversion: 7.7.0
+# Funktion: Schliesst Bild- und RAW-Dateien global fuer das gesamte Repository aus.
+
+# RAW-Dateien (Sony ARW)
+*.arw
+*.ARW
+
+# JPEG-Dateien (alle Schreibweisen)
+*.jpg
+*.JPG
+*.jpeg
+*.JPEG
