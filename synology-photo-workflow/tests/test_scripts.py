@@ -1,3 +1,11 @@
+"""Projekt: Synology Photo Workflow
+Datei: tests/test_scripts.py
+Mitentwickler: MaiTai
+Erstellt: 2026-07-30
+Projektversion: 7.7.0
+Funktion: Automatisierte Prüfung der Projektlogik, Skripte und Verträge.
+"""
+
 from pathlib import Path
 
 
