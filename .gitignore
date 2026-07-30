@@ -1,6 +1,6 @@
 # Synology Photo Workflow | .gitignore (root)
 # Mitentwickler: MaiTai | Erstellt: 2026-07-30 | Projektversion: 7.7.0
-# Funktion: Schliesst Bild- und RAW-Dateien global fuer das gesamte Repository aus.
+# Funktion: Schliesst Bild-, RAW- und sensitive Laufzeitdaten global fuer das gesamte Repository aus.
 
 # RAW-Dateien (Sony ARW)
 *.arw
@@ -11,3 +11,25 @@
 *.JPG
 *.jpeg
 *.JPEG
+
+# Gesichtsbilder und biometrische Daten – duerfen niemals ins Repo
+faces/
+**/faces/
+
+# Modell-Gewichte und safetensors
+*.safetensors
+*.onnx
+*.pt
+*.pth
+*.bin
+models/
+**/models/
+
+# NAS-Laufzeitverzeichnisse (falls versehentlich als Submodule oder Symlink eingebunden)
+WORKFLOW_DATA/
+TEMP_SD/
+TEMP_IMAGES/
+TEMP_DONE/
+TEMP_ERROR/
+MANUAL_KEEP/
+NAS_EXAMPLE/
