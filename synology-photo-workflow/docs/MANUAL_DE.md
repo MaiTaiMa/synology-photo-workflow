@@ -214,8 +214,7 @@ mv "$WORKFLOW_DATA_ROOT/TEMP/TEMP_IMAGES/2026-01-01" "$WORKFLOW_DATA_ROOT/TEMP/T
 ```
 
 Prüfe vor dem ersten echten Phase-2-Lauf Testarchive mit `unzip -t` und die
-Run-Summaries unter `WORKFLOW_DATA_ROOT/runtime/runsummaries`. Details und DSM-Scheduler-Anleitung:
-[`SYNOLOGY_DSM_DEPLOYMENT.md`](SYNOLOGY_DSM_DEPLOYMENT.md).
+Run-Summaries unter `WORKFLOW_DATA_ROOT/runtime/runsummaries`.
 
 ### Lokal ohne Docker
 
