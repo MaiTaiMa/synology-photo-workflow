@@ -1,0 +1,21 @@
+# Synology Photo Workflow | .gitignore
+# Mitentwickler: MaiTai | Erstellt: 2026-07-29 | Projektversion: 7.7.0
+# Funktion: Schuetzt private Medien, Laufzeitdaten und lokale Konfigurationen.
+config/config.yaml
+__pycache__/
+.pytest_cache/
+*.py[cod]
+WORKFLOW_DATA/
+TEMP_SD/
+TEMP_IMAGES/
+TEMP_DONE/
+TEMP_ERROR/
+MANUAL_KEEP/
+*.zip
+*.arw
+*.ARW
+*.jpg
+*.jpeg
+*.JPG
+*.JPEG
+.env

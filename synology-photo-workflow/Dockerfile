@@ -1,12 +1,10 @@
-FROM python:3.11-slim-bookworm
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
-RUN apt-get update && apt-get install -y --no-install-recommends libimage-exiftool-perl libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
-WORKDIR /workspace
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Synology Photo Workflow | Dockerfile
+# Mitentwickler: MaiTai | Erstellt: 2026-07-29 | Projektversion: 7.7.0
+# Funktion: Nicht-privilegiertes CPU-Containerimage fuer einen kontrollierten Lauf.
+FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt && useradd --create-home workflow
 COPY app ./app
-COPY config ./config
-RUN useradd --create-home --uid 1000 workflow && mkdir -p data/TEMP models training familyfaces && chown -R workflow:workflow /workspace
 USER workflow
 ENTRYPOINT ["python", "-m", "app.photoworkflow"]
-CMD ["--help"]

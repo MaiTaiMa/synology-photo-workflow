@@ -1,19 +1,12 @@
+# Synology Photo Workflow | docker-compose.yml
+# Mitentwickler: MaiTai | Erstellt: 2026-07-29 | Projektversion: 7.7.0
+# Funktion: Beispiel fuer persistenten, least-privilege NAS-Mount.
 services:
-  photo-workflow:
+  workflow:
     build: .
-    image: synology-photo-workflow:7.1.0
-    user: "${PUID:?Set PUID}:${PGID:?Set PGID}"
+    user: "1026:100"
     volumes:
-      - ${WORKFLOW_DATA_ROOT:?Set WORKFLOW_DATA_ROOT}:/workspace/data:rw
-      - ./config:/workspace/config:ro
-    read_only: true
-    tmpfs:
-      - /tmp:rw,noexec,nosuid,size=256m
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
-    environment:
-      HOME: /tmp
-      PYTHONDONTWRITEBYTECODE: "1"
+      - /volume1/photo-workflow:/data:rw
+      - ./config/config.yaml:/app/config/config.yaml:ro
+    command: ["--config", "/app/config/config.yaml", "run"]
     restart: "no"

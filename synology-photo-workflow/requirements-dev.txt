@@ -1,3 +1,8 @@
+# Synology Photo Workflow | requirements-dev.txt
+# Mitentwickler: MaiTai | Erstellt: 2026-07-29 | Projektversion: 7.7.0
+# Funktion: Test- und Qualitaetswerkzeuge.
 -r requirements.txt
 pytest>=8,<9
-ruff>=0.6
+ruff>=0.6,<1
+
+# Integration marker support is provided by pytest; exiftool remains system-installed.

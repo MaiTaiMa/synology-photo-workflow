@@ -1,13 +1,31 @@
 #!/usr/bin/env bash
+# =============================================================================
+# Synology Photo Workflow — Vorprüfung
+# Datei: scripts/preflight.sh
+# Zweck: Prüft ausschließlich die lokale Betriebsumgebung vor einem Workflowlauf.
+# Seiteneffekte: Keine Bild- oder Batch-Verarbeitung; der Container validiert nur
+# die Konfiguration. Das Skript beendet sich bei jedem unsicheren Zustand.
+# Entscheidung: Fachliche Regeln, Pfadvalidierung und Workflow-Gates bleiben in
+# Python. Dieses Skript prüft nur die äußere Betriebsgrenze (Docker, Pfade, Config).
+# =============================================================================
 set -Eeuo pipefail
-cd "$(dirname "$0")/.."
-: "${WORKFLOW_DATA_ROOT:?Set WORKFLOW_DATA_ROOT in .env or environment}"
-: "${PUID:?Set PUID in .env or environment}"
-: "${PGID:?Set PGID in .env or environment}"
-[[ "$WORKFLOW_DATA_ROOT" = /* ]] || { echo "WORKFLOW_DATA_ROOT must be absolute" >&2; exit 2; }
-[[ -d "$WORKFLOW_DATA_ROOT" ]] || { echo "Data root does not exist: $WORKFLOW_DATA_ROOT" >&2; exit 2; }
-[[ -r config/config.yaml ]] || { echo "Missing readable config/config.yaml" >&2; exit 2; }
-[[ -w "$WORKFLOW_DATA_ROOT" ]] || { echo "Data root is not writable by scheduler user" >&2; exit 2; }
-docker compose config --quiet
-docker compose run --rm --no-deps photo-workflow --config config/config.yaml automation-status
-echo "Preflight passed; no image batch was processed."
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+DEFAULT_BASEDIR="$ROOT/../NAS_EXAMPLE/TEMP"
+SPW_BASEDIR="${SPW_BASEDIR:-$DEFAULT_BASEDIR}"
+CONFIG_PATH="${SPW_CONFIG_PATH:-$ROOT/config/config.yaml}"
+COMPOSE_SERVICE="${SPW_COMPOSE_SERVICE:-workflow}"
+fail(){ printf 'FAIL: %s
+' "$*" >&2; exit 2; }
+# In das Projektverzeichnis wechseln, damit Docker Compose und relative Pfade stabil sind.
+cd "$ROOT"
+# Diese Prüfungen verhindern einen Start gegen fehlende oder nicht persistente Datenbereiche.
+[[ -f "$CONFIG_PATH" ]] || fail "config missing: $CONFIG_PATH"
+[[ -d "$SPW_BASEDIR" ]] || fail "basedir missing: $SPW_BASEDIR"
+[[ -r "$SPW_BASEDIR" && -w "$SPW_BASEDIR" ]] || fail "basedir not readable/writable: $SPW_BASEDIR"
+command -v docker >/dev/null 2>&1 || fail 'docker unavailable'
+docker compose config -q || fail 'docker compose configuration invalid'
+# validate_config darf keine Fotos mutieren und prüft die interne Konfigurationslogik.
+docker compose run --rm --no-deps "$COMPOSE_SERVICE" --config config/config.yaml validate_config >/dev/null || fail 'container validate_config failed'
+printf 'OK: preflight passed; no batch processed
+'

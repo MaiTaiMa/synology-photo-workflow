@@ -1,50 +1,297 @@
+# Projekt: Synology Photo Workflow
+# Datei: config/config.explained.yaml
+# Funktion: Erweiterte Erläuterung der aktuellen config.yaml mit denselben Werten.
+# Hinweis: Diese Datei erklärt jede Variable explizit und beschreibt mögliche Werte und Auswirkungen.
+
+# -----------------------------------------------------------------------------
+# paths
+# Dieser Block definiert den physischen Arbeitsbereich des Workflows.
+# Alle relativen Pfade werden gegen `basedir` aufgelöst.
+# Mögliche Nutzung: lokales Testverzeichnis, NAS-Mount oder anderer persistenter Zielpfad.
+# Auswirkung: Falsch gesetzte Pfade blockieren den Betrieb oder führen zu Validierungsfehlern.
+# -----------------------------------------------------------------------------
 paths:
-  basedir: data/TEMP
-  tempsd: data/TEMP/TEMP_SD
-  tempimages: data/TEMP/TEMP_IMAGES
-  tempdone: data/TEMP/TEMP_DONE
-  temperror: data/TEMP/TEMP_ERROR
-  manualkeepinbox: data/TEMP/MANUAL_KEEP/inbox
-  manualkeepused: data/TEMP/MANUAL_KEEP/used
-  lockfile: data/TEMP/.workflow.lock
+  # basedir: Basisordner des gesamten Workflows.
+  # Mögliche Werte: relativer Pfad wie ../NAS_EXAMPLE/TEMP oder absoluter NAS-Pfad.
+  # Auswirkung: Alle Unterpfade müssen innerhalb dieses Bereichs bleiben.
+  basedir: ../NAS_EXAMPLE/TEMP
+
+  # temp_sd: Eingang für neue Bild-/RAW-Batches.
+  # Mögliche Werte: relativer Unterordnername, z. B. TEMP_SD.
+  # Auswirkung: Hier beginnt Phase 1 mit der Verarbeitung neuer Eingänge.
+  temp_sd: TEMP_SD
+
+  # temp_images: Ausgabe von Phase 1 zur Sichtprüfung.
+  # Mögliche Werte: relativer Unterordnername, z. B. TEMP_IMAGES.
+  # Auswirkung: Dieser Bereich enthält Kandidaten vor der manuellen Freigabe.
+  temp_images: TEMP_IMAGES
+
+  # temp_done: Manuelles Freigabesignal für Phase 2.
+  # Mögliche Werte: relativer Unterordnername.
+  # Auswirkung: Nur hier abgelegte geprüfte Batches dürfen in Phase 2 weiterlaufen.
+  temp_done: TEMP_DONE
+
+  # temp_error: Quarantäne oder Fehlerbereich.
+  # Mögliche Werte: relativer Unterordnername.
+  # Auswirkung: Blockierte oder fehlerhafte Batches landen hier oder werden hier referenziert.
+  temp_error: TEMP_ERROR
+
+  # workflow_data: Persistenter Bereich für Status, Summaries, Modelle, Logs und Referenzen.
+  # Mögliche Werte: relativer Unterordnername, typischerweise WORKFLOW_DATA.
+  # Auswirkung: Dieser Bereich ist das technische Gedächtnis des Workflows.
+  workflow_data: WORKFLOW_DATA
+
+  # manual_keep_inbox: Eingang für manuell geschützte Keep-Dateien.
+  # Mögliche Werte: relativer Unterordnerpfad.
+  # Auswirkung: Dateien hier werden kontrolliert dem Manual-Keep-Prozess zugeführt.
+  manual_keep_inbox: MANUAL_KEEP/inbox
+
+  # manual_keep_used: Bereits verwendete Manual-Keep-Dateien.
+  # Mögliche Werte: relativer Unterordnerpfad.
+  # Auswirkung: Verhindert doppelte Wiederverwendung oder unklare Zuordnung.
+  manual_keep_used: MANUAL_KEEP/used
+
+# -----------------------------------------------------------------------------
+# workflow
+# Dieser Block steuert Ausführungsmodus, Reihenfolge und Laufzeitbegrenzung.
+# Mögliche Modi hängen von der implementierten CLI ab; der aktuelle sichere Standard
+# nutzt den zweistufigen Ablauf mit konservativer Wiederaufnahme.
+# -----------------------------------------------------------------------------
 workflow:
-  phaseexecution: phase1only
-  batchlimit: 1
-  batchsort: oldestfirst
-  resumeincompletebatches: true
-  datereconstruction: {mode: legacybash, decadeprefix: '202', yeardigitindex: 3}
-automation:
-  mode: assistedreview
-  automaticphase2enabled: false
+  # phase_execution: gewünschter Standardablauf.
+  # Mögliche Werte: z. B. phase1_then_phase2, phase1_only, phase2_only, sofern implementiert.
+  # Auswirkung: Steuert den kanonischen `run`-Ablauf.
+  phase_execution: phase1_then_phase2
+
+  # batch_limit: maximale Anzahl Batches pro Lauf.
+  # Mögliche Werte: positive Ganzzahl.
+  # Auswirkung: Kleinere Werte begrenzen Risiko und Laufzeit pro Scheduler-Lauf.
+  batch_limit: 1
+
+  # batch_sort: Verarbeitungsreihenfolge.
+  # Mögliche Werte: im aktuellen Projekt konservativ oldest_first.
+  # Auswirkung: Bestimmt, welcher Batch zuerst fortgesetzt oder verarbeitet wird.
+  batch_sort: oldest_first
+
+  # skip_incomplete_batches: unvollständige Batches überspringen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true erhöht Robustheit bei Live-Eingängen; false ist strenger.
+  skip_incomplete_batches: false
+
+  # max_run_hours: maximales Zeitbudget eines Laufs.
+  # Mögliche Werte: positive Zahl, typischerweise Stunden.
+  # Auswirkung: Verhindert überlange oder unkontrollierte Scheduler-Läufe.
+  max_run_hours: 10
+
+  # resume_incomplete_batches: pausierte oder unvollständige Läufe bevorzugt fortsetzen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true unterstützt idempotente Wiederaufnahme statt Neubeginn.
+  resume_incomplete_batches: true
+
+  # dry_run: keine mutierenden Änderungen ausführen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true eignet sich für Tests und Sicherheitsprüfungen.
+  dry_run: false
+
+# -----------------------------------------------------------------------------
+# culling
+# Dieser Block legt Schwellwerte und Gewichtungen für die Bewertungslogik fest.
+# Änderungen an diesen Werten beeinflussen direkt Vorschläge, Sterne und Keep-/Reject-Tendenzen.
+# -----------------------------------------------------------------------------
 culling:
+  # enabled: aktiviert die Bewertungs- und Auswahlfunktion.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false würde die AI-/Scoring-Logik deaktivieren.
   enabled: true
-  movefiles: true
-  autokeepminrating: 2
-  rejectthreshold: 0.35
-  keepthreshold: 0.65
-  finalcomponentweights: {basescore: 0.55, eyescore: 0.10, personalscore: 0.20, familyscore: 0.15}
-  baseweights: {sharpness: 0.35, aesthetic: 0.35, exposure: 0.20, referencescore: 0.10}
-familyrecognition:
+
+  # keep_threshold: Schwelle für automatische Keep-Tendenz.
+  # Mögliche Werte: 0.0 bis 1.0.
+  # Auswirkung: Höherer Wert macht Keep konservativer.
+  keep_threshold: 0.65
+
+  # reject_threshold: Schwelle für automatische Reject-Tendenz.
+  # Mögliche Werte: 0.0 bis 1.0.
+  # Auswirkung: Niedrigerer Wert verschärft Reject-Vorschläge.
+  reject_threshold: 0.35
+
+  # auto_keep_min_rating: Mindeststernzahl für automatische Keep-nahe Entscheidungen.
+  # Mögliche Werte: Ganzzahl 0 bis 5.
+  # Auswirkung: Höhere Werte reduzieren aggressive Auto-Keep-Signale.
+  auto_keep_min_rating: 2
+
+  # final_component_weights: Endgewichtung der Hauptkomponenten.
+  # Mögliche Werte: Mapping mit nichtnegativen Zahlen; fachlich sinnvoll mit Summe 1.
+  # Auswirkung: Verschiebt die Dominanz einzelner Bewertungsquellen.
+  final_component_weights: {base_score: 0.55, eye_score: 0.10, personal_score: 0.20, family_score: 0.15}
+
+  # base_weights: Gewichtung der technischen Basiskomponenten.
+  # Mögliche Werte: Mapping mit nichtnegativen Zahlen; fachlich sinnvoll mit Summe 1.
+  # Auswirkung: Beeinflusst die Zusammensetzung des Basis-Scores.
+  base_weights: {sharpness: 0.35, aesthetic: 0.35, exposure: 0.20, reference_score: 0.10}
+
+  # star_rating_bands: Abbildung von Scorebereichen auf Sterne.
+  # Mögliche Werte: Liste aus min/max/rating-Bändern.
+  # Auswirkung: Bestimmt die Sichtbarkeit und Einordnung der finalen Scores.
+  star_rating_bands:
+    - {min: 0.00, max: 0.19, rating: 0}
+    - {min: 0.20, max: 0.39, rating: 1}
+    - {min: 0.40, max: 0.59, rating: 2}
+    - {min: 0.60, max: 0.74, rating: 3}
+    - {min: 0.75, max: 0.89, rating: 4}
+    - {min: 0.90, max: 1.00, rating: 5}
+
+# -----------------------------------------------------------------------------
+# phase2
+# Dieser Block steuert die Sicherheitsgrenze zwischen Archivierung und Löschung.
+# Änderungen hier sind besonders sensibel, weil sie den Umgang mit ARW-Dateien beeinflussen.
+# -----------------------------------------------------------------------------
+phase2:
+  # delete_unneeded_arws_after_verified_archive: ARWs erst nach verifiziertem Archiv löschen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true erlaubt die kontrollierte Bereinigung nach erfolgreicher Prüfung.
+  delete_unneeded_arws_after_verified_archive: true
+
+  # allow_automatic_handoff: automatische Übergabe an Phase 2.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false erzwingt konservative manuelle Freigaben.
+  allow_automatic_handoff: false
+
+# -----------------------------------------------------------------------------
+# metadata
+# Dieser Block regelt Metadaten-Schreibmodus und Absicherung.
+# Er beeinflusst, ob Dateien verändert werden und wie stark die Rückprüfung abgesichert ist.
+# -----------------------------------------------------------------------------
+metadata:
+  # write_mode: Modus für Metadatenänderungen.
+  # Mögliche Werte: disabled, exiftool oder weitere projektseitig unterstützte Modi.
+  # Auswirkung: disabled vermeidet jede produktive Metadatenmutation.
+  write_mode: disabled
+
+  # verify_after_write: Metadaten nach Schreiben zurücklesen und prüfen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true erhöht Sicherheit, kann aber Laufzeit kosten.
+  verify_after_write: true
+
+  # create_exiftool_backups: Exiftool-Sicherungsdateien anlegen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true erhöht Rückfalloptionen, aber auch Speicherbedarf.
+  create_exiftool_backups: false
+
+  # sidecar_recovery_enabled: Recovery über Sidecar-Dateien erlauben.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false hält den Standardpfad einfach und konservativ.
+  sidecar_recovery_enabled: false
+
+# -----------------------------------------------------------------------------
+# family_recognition
+# Dieser Block konfiguriert den optionalen Face-Bereich.
+# Er bleibt im Standard deaktiviert, damit das Projekt ohne zusätzliche Modellabhängigkeiten lauffähig ist.
+# -----------------------------------------------------------------------------
+family_recognition:
+  # enabled: Gesichtserkennung aktivieren.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true aktiviert Backend-, Modell- und Diagnoselogik.
   enabled: false
-  backend: opencvyunetsface
-  detectormodel: data/TEMP/WORKFLOW_DATA/models/face/face_detection_yunet.onnx
-  recognizermodel: data/TEMP/WORKFLOW_DATA/models/face/face_recognition_sface.onnx
-  similaritymetric: cosine_similarity
-  matchthreshold: null
-metadataculling:
-  enabled: false
-  allowrecoverysidecar: false
-samples: {root: data/TEMP/WORKFLOW_DATA/samples}
-runtime:
-  root: data/TEMP/WORKFLOW_DATA/runtime
-  state: data/TEMP/WORKFLOW_DATA/runtime/state
-  runsummaries: data/TEMP/WORKFLOW_DATA/runtime/runsummaries
-  calibrationbatches: data/TEMP/WORKFLOW_DATA/runtime/calibration/batches
-  calibrationindex: data/TEMP/WORKFLOW_DATA/runtime/calibration/decisionindex.jsonl
-  calibrationsummary: data/TEMP/WORKFLOW_DATA/runtime/calibration/calibrationsummary.json
+
+  # backend: Name des verwendeten Face-Backends.
+  # Mögliche Werte: projektweit registrierte Backend-IDs wie opencv_yunet_sface_cpu.
+  # Auswirkung: beeinflusst verfügbare Modelle, Diagnosen und Matching-Verträge.
+  backend: opencv_yunet_sface_cpu
+
+  # execution_profile: Laufzeitprofil des Backends.
+  # Mögliche Werte: cpu, cuda oder weitere implementierte Profile.
+  # Auswirkung: bestimmt technische Laufzeitvoraussetzungen.
+  execution_profile: cpu
+
+  # metric: Vergleichsmetrik für Embeddings.
+  # Mögliche Werte: z. B. cosine_similarity.
+  # Auswirkung: beeinflusst Schwellen- und Margin-Interpretation.
+  metric: cosine_similarity
+
+  # match_threshold: Schwelle für sichere Zuordnung.
+  # Mögliche Werte: null oder numerische Schwelle.
+  # Auswirkung: null bedeutet im Standard keine automatische Personen-Zuordnung.
+  match_threshold: null
+
+  # min_best_second_margin: Mindestabstand zwischen bestem und zweitbestem Treffer.
+  # Mögliche Werte: null oder nichtnegative Zahl.
+  # Auswirkung: null deaktiviert automatische sichere Match-Freigabe.
+  min_best_second_margin: null
+
+  # backends: optionaler Block für backend-spezifische Zusatzkonfigurationen.
+  # Mögliche Werte: leeres oder befülltes Mapping.
+  # Auswirkung: bleibt leer, solange kein Spezialbackend konfiguriert wird.
+  backends: {}
+
+# -----------------------------------------------------------------------------
+# automation
+# Dieser Block definiert den maximal erlaubten Automatisierungsgrad.
+# Er ist besonders kritisch, weil hier festgelegt wird, ob der Workflow nur assistiert
+# oder weitergehende automatische Schritte ausführen darf.
+# -----------------------------------------------------------------------------
+automation:
+  # mode: Betriebsmodus der Automatisierung.
+  # Mögliche Werte: assisted_review sowie weitere projektseitig erlaubte Modi.
+  # Auswirkung: assisted_review hält den Menschen im Entscheidungspfad.
+  mode: assisted_review
+
+  # automatic_phase2_enabled: automatische Ausführung von Phase 2 erlauben.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false hält die automatische Übergabe standardmäßig gesperrt.
+  automatic_phase2_enabled: false
+
+  # automatic_candidates_enabled: automatische Kandidatenvorschläge erlauben.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false reduziert unkontrollierte Vorschlagsaktivität.
+  automatic_candidates_enabled: false
+
+  # automatic_reference_activation: Referenzen automatisch aktivieren.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false verhindert selbständige Referenzänderungen.
+  automatic_reference_activation: false
+
+  # automatic_sample_activation: Geschmackssamples automatisch aktivieren.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false schützt die manuelle Hoheit über Trainings-/Referenzdaten.
+  automatic_sample_activation: false
+
+  # rollback_on_error: bei kritischem Fehler auf konservativen Zustand zurückfallen.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true verbessert die Betriebssicherheit.
+  rollback_on_error: true
+
+# -----------------------------------------------------------------------------
+# calibration
+# Dieser Block steuert die Kalibrierung und spätere Auswertung bestätigter Daten.
+# Er beeinflusst, wann Readiness oder Schattenauswertung fachlich belastbar wird.
+# -----------------------------------------------------------------------------
 calibration:
+  # enabled: Kalibrierungslogik aktivieren.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: true sammelt und bewertet Review-Ergebnisse systematisch.
   enabled: true
-  minimumreviewedbatches: 3
-  minimumreviewedimages: 300
-  minterminaldecisionagreement: 0.90
-  maxrejecttokeeprate: 0.0
+
+  # reviewed_batches_minimum: Mindestanzahl bewerteter Batches.
+  # Mögliche Werte: positive Ganzzahl.
+  # Auswirkung: höhere Werte erhöhen die Aussagekraft, verzögern aber Freigaben.
+  reviewed_batches_minimum: 3
+
+  # reviewed_images_minimum: Mindestanzahl bewerteter Bilder.
+  # Mögliche Werte: positive Ganzzahl.
+  # Auswirkung: sichert statistisch belastbarere Aussagen.
+  reviewed_images_minimum: 300
+
+  # terminal_agreement_minimum: Mindestübereinstimmung direkter Endentscheidungen.
+  # Mögliche Werte: 0.0 bis 1.0.
+  # Auswirkung: höhere Werte machen spätere Freigaben strenger.
+  terminal_agreement_minimum: 0.90
+
+  # reject_to_keep_rate_maximum: maximal tolerierte kritische Fehlrate.
+  # Mögliche Werte: 0.0 bis 1.0.
+  # Auswirkung: niedrige Werte erhöhen Sicherheit und Konservativität.
+  reject_to_keep_rate_maximum: 0.0
+
+  # shadow_model_enabled: Schatten- oder Beobachtungsmodus erlauben.
+  # Mögliche Werte: true oder false.
+  # Auswirkung: false hält experimentelle Auswertung standardmäßig deaktiviert.
+  shadow_model_enabled: false

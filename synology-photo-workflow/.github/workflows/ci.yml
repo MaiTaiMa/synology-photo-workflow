@@ -1,0 +1,18 @@
+# Projekt: Synology Photo Workflow | Datei: .github/workflows/ci.yml
+# Mitentwickler: MaiTai | Erstellt: 2026-07-29 | Projektversion: 7.7.0
+# Funktion: Prüft Header, Syntax, Lint, Tests und Referenzkonfiguration.
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: pip install -r requirements-dev.txt
+      - run: python -m compileall app
+      - run: ruff check app tests
+      - run: pytest -q
+      - run: python -m app.photoworkflow --config config/config.example.yaml validate_config
+      - run: python -c "from pathlib import Path; assert all('Projekt:' in p.read_text(encoding='utf-8')[:500] for p in list(Path('app').glob('*.py')) + list(Path('docs').glob('*.md')) if p.name != 'Synology-Photo-Workflow_Spezifikation_v7-7.md')"

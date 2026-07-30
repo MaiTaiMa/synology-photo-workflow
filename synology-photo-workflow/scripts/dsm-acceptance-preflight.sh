@@ -1,19 +1,26 @@
-#!/bin/sh
-# Non-destructive DSM preflight. It deliberately never invokes Phase 1 or Phase 2.
-set -eu
-ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+#!/usr/bin/env bash
+# =============================================================================
+# Synology Photo Workflow — DSM-Abnahmevorprüfung
+# Datei: scripts/dsm-acceptance-preflight.sh
+# Zweck: Prüft die Voraussetzungen eines DSM-/Scheduler-Betriebs ohne Batchlauf.
+# Seiteneffekte: Keine Fotoverarbeitung; nur Docker- und Dateisystem-Prüfungen.
+# Entscheidung: Der Status des persistenten Mounts wird vor dem Schedulerbetrieb
+# geprüft, weil Container ohne dauerhaften Datenbereich keine sicheren States halten.
+# =============================================================================
+set -Eeuo pipefail
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+DEFAULT_BASEDIR="$ROOT/../NAS_EXAMPLE/TEMP"
+SPW_BASEDIR="${SPW_BASEDIR:-$DEFAULT_BASEDIR}"
+CONFIG_PATH="${SPW_CONFIG_PATH:-$ROOT/config/config.yaml}"
+fail(){ printf 'FAIL: %s
+' "$*" >&2; exit 1; }
 cd "$ROOT"
-fail(){ printf '%s
-' "FAIL: $*" >&2; exit 1; }
-[ -f .env ] || fail '.env missing; copy .env.example and configure it'
-[ -f config/config.yaml ] || fail 'config/config.yaml missing; copy and review example'
+[[ -f "$CONFIG_PATH" ]] || fail "config missing: $CONFIG_PATH"
 command -v docker >/dev/null 2>&1 || fail 'docker unavailable'
 docker compose config -q || fail 'docker compose configuration invalid'
-./scripts/verify-legacy.sh
-# Require a mounted persistent root, but only inspect the configured host path.
-DATA=$(sed -n 's/^WORKFLOW_DATA_ROOT=//p' .env | tail -n 1)
-[ -n "$DATA" ] || fail 'WORKFLOW_DATA_ROOT missing'
-[ -d "$DATA" ] || fail "persistent data root missing: $DATA"
-[ -r "$DATA" ] && [ -w "$DATA" ] || fail "data root not readable/writable: $DATA"
-printf '%s
-' "OK: preflight passed; no photo batch was processed"
+[[ -d "$SPW_BASEDIR" ]] || fail "persistent data root missing: $SPW_BASEDIR"
+[[ -r "$SPW_BASEDIR" && -w "$SPW_BASEDIR" ]] || fail "data root not readable/writable: $SPW_BASEDIR"
+./scripts/preflight.sh >/dev/null
+printf 'OK: DSM acceptance preflight passed; no photo batch was processed
+'
