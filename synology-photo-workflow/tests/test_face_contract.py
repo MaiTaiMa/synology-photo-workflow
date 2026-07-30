@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: tests/test_face_contract_v77.py
+Datei: tests/test_face_contract.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
@@ -22,10 +22,13 @@ def test_registry_rejects_profile_mismatch_without_fallback():
 
 
 def test_selection_fingerprint_uses_only_active_references():
-    selection = {'person_slug': 'person-1', 'files': [
-        {'relative_path': 'reference/a.jpg', 'sha256': 'a', 'status': 'active'},
-        {'relative_path': 'newfaces/b.jpg', 'sha256': 'b', 'status': 'active'},
-    ]}
+    selection = {
+        'person_slug': 'person-1',
+        'files': [
+            {'relative_path': 'reference/a.jpg', 'sha256': 'a', 'status': 'active'},
+            {'relative_path': 'newfaces/b.jpg', 'sha256': 'b', 'status': 'active'},
+        ],
+    }
     assert selection_fingerprint(selection, 'person-1')
 
 

@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: tests/test_runtime_config_v77.py
+Datei: tests/test_runtime_config.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
@@ -23,9 +23,9 @@ def test_legacy_alias_conflict_is_rejected(tmp_path):
 
 
 def test_lock_can_only_be_removed_by_its_owner(tmp_path):
-    lock = RunLock(tmp_path/'workflow.lock')
+    lock = RunLock(tmp_path / 'workflow.lock')
     with lock:
         with pytest.raises(RuntimeError, match='manual_verification'):
-            with RunLock(tmp_path/'workflow.lock'):
+            with RunLock(tmp_path / 'workflow.lock'):
                 pass
-    assert not (tmp_path/'workflow.lock').exists()
+    assert not (tmp_path / 'workflow.lock').exists()

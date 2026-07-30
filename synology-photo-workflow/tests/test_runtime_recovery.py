@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: tests/test_runtime_recovery_v77.py
+Datei: tests/test_runtime_recovery.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
@@ -26,9 +26,11 @@ def test_batch_lock_is_exclusive(tmp_path):
 
 
 def test_quarantine_creates_auditable_manifest(tmp_path):
-    batch = tmp_path/'TEMP_SD'/'camera'; batch.mkdir(parents=True); (batch/'IMG.jpg').write_bytes(b'x')
-    destination = quarantine_batch(batch, tmp_path, tmp_path/'TEMP_ERROR', 'incomplete_transfer', {'age_seconds': 2})
-    manifest = read_control_json(destination/'SAVE'/'quarantine_manifest.json', 'batch_id')
+    batch = tmp_path / 'TEMP_SD' / 'camera'
+    batch.mkdir(parents=True)
+    (batch / 'IMG.jpg').write_bytes(b'x')
+    destination = quarantine_batch(batch, tmp_path, tmp_path / 'TEMP_ERROR', 'incomplete_transfer', {'age_seconds': 2})
+    manifest = read_control_json(destination / 'SAVE' / 'quarantine_manifest.json', 'batch_id')
     assert manifest['reason'] == 'incomplete_transfer' and manifest['recovery_required']
 
 

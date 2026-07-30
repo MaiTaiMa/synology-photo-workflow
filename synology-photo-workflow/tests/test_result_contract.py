@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: tests/test_result_contract_v77.py
+Datei: tests/test_result_contract.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
@@ -10,7 +10,11 @@ from app.result_contract import decision_counts, phase2_result, status_summary
 
 
 def test_result_contract_counts_only_canonical_decisions():
-    assert decision_counts([{'predicted_decision': 'keep'}, {'predicted_decision': 'review'}, {'predicted_decision': 'other'}]) == {'keep': 1, 'review': 1, 'reject': 0}
+    assert decision_counts([
+        {'predicted_decision': 'keep'},
+        {'predicted_decision': 'review'},
+        {'predicted_decision': 'other'},
+    ]) == {'keep': 1, 'review': 1, 'reject': 0}
 
 
 def test_status_summary_and_zip_conflict_are_preserved():

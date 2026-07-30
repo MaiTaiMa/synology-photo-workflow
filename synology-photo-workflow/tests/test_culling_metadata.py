@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: tests/test_culling_metadata_v77.py
+Datei: tests/test_culling_metadata.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
@@ -20,11 +20,19 @@ def test_unknown_score_has_no_star_rating():
 
 
 def test_series_fields_are_deterministic_and_explainable():
-    records = apply_series([{'relative_path': 'trip_1.jpg', 'final_score': .4}, {'relative_path': 'trip_2.jpg', 'final_score': .8}])
+    records = apply_series([
+        {'relative_path': 'trip_1.jpg', 'final_score': .4},
+        {'relative_path': 'trip_2.jpg', 'final_score': .8},
+    ])
     best = next(item for item in records if item['series_best'])
     assert best['series_rank'] == 1 and best['series_size'] == 2
 
 
 def test_metadata_does_not_tag_unknown_people():
-    tags = build_tags({'predicted_decision': 'keep', 'star_rating': 4, 'family_match': False, 'person_slug': 'unknown'})
+    tags = build_tags({
+        'predicted_decision': 'keep',
+        'star_rating': 4,
+        'family_match': False,
+        'person_slug': 'unknown',
+    })
     assert not any('person-' in tag for tag in tags['keywords'])
