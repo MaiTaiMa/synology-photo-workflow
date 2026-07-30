@@ -13,7 +13,7 @@ def test_top_level_nas_example_structure_exists():
     root = Path(__file__).parents[2] / 'NAS_EXAMPLE' / 'TEMP'
     required = [
         'MANUAL_KEEP/inbox', 'MANUAL_KEEP/used', 'TEMP_DONE', 'TEMP_ERROR', 'TEMP_IMAGES', 'TEMP_SD',
-        'WORKFLOW_DATA/faces', 'WORKFLOW_DATA/models/family', 'WORKFLOW_DATA/models/taste',
+        'WORKFLOW_DATA/faces', 'WORKFLOW_DATA/models/face', 'WORKFLOW_DATA/models/taste',
         'WORKFLOW_DATA/runtime/calibration/batches', 'WORKFLOW_DATA/runtime/locks',
         'WORKFLOW_DATA/runtime/logs', 'WORKFLOW_DATA/runtime/quarantine',
         'WORKFLOW_DATA/runtime/runsummaries', 'WORKFLOW_DATA/runtime/state',
