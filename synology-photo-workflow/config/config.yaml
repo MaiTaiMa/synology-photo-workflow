@@ -140,6 +140,23 @@ culling:
     - {min: 0.75, max: 0.89, rating: 4}
     - {min: 0.90, max: 1.00, rating: 5}
 
+  # taste_model: optionaler CLIP-Adapter fuer personal_score via safetensors-Modell.
+  # Mögliche Werte: enabled true/false; model_path absoluter oder relativer Pfad zur .safetensors-Datei.
+  # Auswirkung: enabled: false deaktiviert CLIP vollstaendig; reference_score bleibt dann None.
+  # Voraussetzung: pip install -r requirements-clip.txt sowie Modell unter model_path vorhanden.
+  taste_model:
+    enabled: false
+    backend: clip_aesthetic
+    model_path: ../NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/taste/model.safetensors
+    positive_prompts:
+      - a beautiful sharp photograph
+      - professional photography
+      - perfect exposure and composition
+    negative_prompts:
+      - blurry photo
+      - bad photo
+      - overexposed underexposed
+
 # -----------------------------------------------------------------------------
 # phase2
 # Dieser Block steuert die Sicherheitsgrenze zwischen Archivierung und Löschung.
