@@ -1,35 +1,54 @@
 # Synology Photo Workflow | .gitignore (root)
 # Mitentwickler: MaiTai | Erstellt: 2026-07-30 | Projektversion: 7.7.0
-# Funktion: Schliesst Bild-, RAW- und sensitive Laufzeitdaten global fuer das gesamte Repository aus.
+# Funktion: Schliesst alle persoenlichen Laufzeit- und Mediendaten global aus.
 
-# RAW-Dateien (Sony ARW)
+# -----------------------------------------------------------------------
+# NAS_EXAMPLE: gesamten Laufzeit-Inhalt ignorieren,
+# aber README.md und .gitkeep-Platzhalter fuer die Ordnerstruktur behalten
+# -----------------------------------------------------------------------
+NAS_EXAMPLE/TEMP/TEMP_SD/**
+NAS_EXAMPLE/TEMP/TEMP_IMAGES/**
+NAS_EXAMPLE/TEMP/TEMP_DONE/**
+NAS_EXAMPLE/TEMP/TEMP_ERROR/**
+NAS_EXAMPLE/TEMP/MANUAL_KEEP/**
+NAS_EXAMPLE/TEMP/WORKFLOW_DATA/**
+
+# Ausnahmen: Struktur-Dateien bleiben im Repo
+!NAS_EXAMPLE/TEMP/TEMP_SD/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_IMAGES/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_DONE/.gitkeep
+!NAS_EXAMPLE/TEMP/TEMP_ERROR/.gitkeep
+!NAS_EXAMPLE/TEMP/MANUAL_KEEP/.gitkeep
+!NAS_EXAMPLE/TEMP/WORKFLOW_DATA/.gitkeep
+
+# -----------------------------------------------------------------------
+# Bilder und RAW-Dateien - global, egal wo im Repo
+# -----------------------------------------------------------------------
 *.arw
 *.ARW
-
-# JPEG-Dateien (alle Schreibweisen)
 *.jpg
 *.JPG
 *.jpeg
 *.JPEG
 
-# Gesichtsbilder und biometrische Daten – duerfen niemals ins Repo
-faces/
-**/faces/
-
-# Modell-Gewichte und safetensors
+# -----------------------------------------------------------------------
+# Modell-Gewichte und biometrische Daten - niemals ins Repo
+# -----------------------------------------------------------------------
 *.safetensors
 *.onnx
 *.pt
 *.pth
 *.bin
+faces/
+**/faces/
 models/
 **/models/
 
-# NAS-Laufzeitverzeichnisse (falls versehentlich als Submodule oder Symlink eingebunden)
-WORKFLOW_DATA/
-TEMP_SD/
-TEMP_IMAGES/
-TEMP_DONE/
-TEMP_ERROR/
-MANUAL_KEEP/
-NAS_EXAMPLE/
+# -----------------------------------------------------------------------
+# Python- und Tool-Artefakte
+# -----------------------------------------------------------------------
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.zip
+.env
