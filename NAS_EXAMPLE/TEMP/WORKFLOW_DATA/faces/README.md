@@ -14,10 +14,10 @@ Empfehlung:
 - pro Bild möglichst nur das relevante Hauptgesicht
 
 Beispiel:
-- family_faces/Vater/
-- family_faces/Mutter/
-- family_faces/Kind1/
-- family_faces/Kind2/
+- faces/Vater/
+- faces/Mutter/
+- faces/Kind1/
+- faces/Kind2/
 
 Diese Referenzbilder dienen ausschließlich dem Familien-Erkennungsmodul.
 
