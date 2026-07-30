@@ -1,5 +1,5 @@
 """Projekt: Synology Photo Workflow
-Datei: app/archives.py
+Datei: tests/test_configuration.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
 Projektversion: 7.7.0
