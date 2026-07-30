@@ -48,8 +48,13 @@ def stars(score: float | None, bands: list[dict[str, Any]]) -> int | None:
     raise ValueError('score_outside_star_bands')
 
 
-def technical_components(image: str | Path, base_weights: dict[str, float], longest_edge: int = 512) -> dict[str, float | None]:
-    """Berechnet leichte CPU-Metriken; bei fehlendem Pillow oder defektem Bild bleiben Werte None."""
+def technical_components(
+    image: str | Path,
+    base_weights: dict[str, float],
+    longest_edge: int = 512,
+    taste_options: dict | None = None,
+) -> dict[str, float | None]:
+    """Berechnet leichte CPU-Metriken und optionalen CLIP-personal_score; bei Fehler bleiben Werte None."""
     try:
         from PIL import Image, ImageStat, ImageFilter
         with Image.open(image) as source:
@@ -66,6 +71,9 @@ def technical_components(image: str | Path, base_weights: dict[str, float], long
             aesthetic = clamp(0.55 * min(1.0, deviation) + 0.25 * detail + 0.20 * (1.0 - abs(width / max(height, 1) - 1.5) / 2.5))
             exposure = clamp(1.0 - abs(mean - 0.5) * 1.8)
             reference_score = None
+            if taste_options and taste_options.get('enabled'):
+                from .clip_taste_adapter import score as clip_score
+                reference_score = clip_score(image, taste_options)
             values = {'sharpness': sharpness, 'aesthetic': aesthetic, 'exposure': exposure, 'reference_score': reference_score}
             usable = {key: value for key, value in values.items() if value is not None and base_weights.get(key, 0) > 0}
             base = sum(usable[key] * base_weights[key] for key in usable) / sum(base_weights[key] for key in usable) if usable else None

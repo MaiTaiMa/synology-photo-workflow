@@ -53,6 +53,7 @@ def phase1(config: dict[str, Any], folder: str | Path | None = None) -> list[dic
     batches = [source] if folder else sorted(item for item in source.iterdir() if item.is_dir() and not item.is_symlink())
     results = []
     budget = RunBudget(config['workflow'].get('max_run_hours', 10))
+    taste_options = config['culling'].get('taste_model')
     for batch in batches[:config['workflow']['batch_limit']]:
         budget.checkpoint('phase1_batch')
         require_complete_phase1_inventory(batch)
@@ -69,7 +70,7 @@ def phase1(config: dict[str, Any], folder: str | Path | None = None) -> list[dic
                 shutil.move(raw, arw / raw.name)
             images = []
             for image in files(batch, IMG):
-                technical = technical_components(image, config['culling']['base_weights'])
+                technical = technical_components(image, config['culling']['base_weights'], taste_options=taste_options)
                 components = {'base_score': technical['base_score'], 'eye_score': None, 'personal_score': None, 'family_score': None}
                 score = final_score(components, config['culling']['final_component_weights'])
                 decision = predicted(score, config['culling'])
