@@ -2,7 +2,7 @@
 Datei: app/phases.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
-Projektversion: 7.7.0
+Projektversion: 7.8.0
 Funktion: Orchestriert den konservativen Zwei-Phasen-Ablauf mit Inventar, Scoring, Metadaten, Review-Record und Archivschutz.
 SICHERHEIT: Phase 1 mutiert erst nach Inventarprüfung; Phase 2 bleibt freigabegebunden.
 """
@@ -13,6 +13,7 @@ import json
 import shutil
 from pathlib import Path
 from typing import Any
+from . import VERSION
 from .archives import archive_unneeded
 from .batch_state import state_path, write_state
 from .calibration import record
@@ -32,7 +33,7 @@ def _dirs(config: dict[str, Any]) -> dict[str, str]:
 def _phase1_manifest(batch_id_value: str, source_name: str, source_fingerprint: str, images: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
     """Erstellt den prüfbaren Snapshot der Phase-1-Prognosen vor sichtbarer Ablage."""
     now = utcnow()
-    return {'schema_version': 1, 'batch_id': batch_id_value, 'source_folder_name': source_name, 'source_fingerprint': source_fingerprint, 'created_at': now, 'updated_at': now, 'producer_version': '7.7.0', 'config_fingerprint': canonical_hash(config), 'images': images}
+    return {'schema_version': 1, 'batch_id': batch_id_value, 'source_folder_name': source_name, 'source_fingerprint': source_fingerprint, 'created_at': now, 'updated_at': now, 'producer_version': VERSION, 'config_fingerprint': canonical_hash(config), 'images': images}
 
 
 def _write_scores(path: Path, images: list[dict[str, Any]]) -> None:

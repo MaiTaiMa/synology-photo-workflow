@@ -1,5 +1,15 @@
 # Changelog
 
+## 7.8.0 — 2026-07-31
+
+- Vollständige Versionserhöhung von 7.7.0 auf 7.8.0 im gesamten Projekt.
+- `producer_version` in `archives.py` und `phases.py` wird aus `app.__init__.VERSION` importiert statt als String-Literal — kein manueller Versionsstring mehr in Laufzeit-Manifesten.
+- Stärkere Konfigurationsvalidierung für `taste_model` und `family_recognition.backends`.
+- Korrektes Score-Wiring: `reference_score` → `personal_score`.
+- Stabilerer Face-Backend-Fingerprint (SHA256-basiert).
+- Detailliertere Kommentare in `config/config.yaml`.
+- Neue Testdatei `tests/test_ai_model_wiring.py` für KI-Anbindung und Konfigurationskonsistenz.
+
 ## 7.7.0 — 2026-07-29
 
 - Neuaufbau nach alleiniger normativer Spezifikation v7.7.
