@@ -2,7 +2,7 @@
 Datei: app/configuration.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
-Projektversion: 7.7.0
+Projektversion: 7.8.0
 Funktion: Lädt, migriert und validiert die vollständige Konfiguration einschließlich sicherer Automatikgates.
 SICHERHEIT: Konfigurations- und Lockfehler stoppen vor jeder produktiven Mutation.
 """
@@ -98,7 +98,6 @@ def validate_config(config: dict[str, Any]) -> None:
     if face['execution_profile'] == 'cuda' and face['backend'] != 'onnx_face_cuda':
         raise ValueError('CONFIGINVALID cuda profile/backend')
     if face['match_threshold'] is None and face['enabled']:
-        # Unkalibrierte Face-Funktion darf laufen, aber nicht matchen/taggen; Diagnose bleibt Pflicht beim Aktivieren.
         pass
 
 

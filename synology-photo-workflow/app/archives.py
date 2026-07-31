@@ -2,7 +2,7 @@
 Datei: app/archives.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
-Projektversion: 7.7.0
+Projektversion: 7.8.0
 Funktion: Unveränderlicher Archivplan, verifizierte Aktivierung, Löschjournal und sichere idempotente Archivwiederaufnahme.
 SICHERHEIT: Wiederaufnahme validiert stets das vorhandene Archiv und löscht nur nachweislich archivierte Quellen.
 """
@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+from . import VERSION
 from .inventory import arw_bindings
 from .safety import SafetyError, atomic_json, read_control_json, safe_zip, sha256, utcnow, validate_zip
 
@@ -94,6 +95,6 @@ def archive_unneeded(batch: str | Path, config: dict[str, Any]) -> dict[str, Any
     if selected:
         archive_hash, member_hashes = safe_zip(selected, target, batch_path)
     now = utcnow()
-    manifest = {'schema_version': 1, 'batch_id': batch_path.name, 'created_at': now, 'updated_at': now, 'producer_version': '7.7.0', 'archive_path': target.relative_to(batch_path).as_posix() if archive_hash else None, 'archive_hash': archive_hash, 'entries': entries, 'entry_hashes': member_hashes, 'activation_verified_at': now if archive_hash else None, 'zip_target_collision': collision, 'deletions': []}
+    manifest = {'schema_version': 1, 'batch_id': batch_path.name, 'created_at': now, 'updated_at': now, 'producer_version': VERSION, 'archive_path': target.relative_to(batch_path).as_posix() if archive_hash else None, 'archive_hash': archive_hash, 'entries': entries, 'entry_hashes': member_hashes, 'activation_verified_at': now if archive_hash else None, 'zip_target_collision': collision, 'deletions': []}
     atomic_json(manifest_file, manifest, 'batch_id')
     return _delete_verified_sources(batch_path, config, manifest)

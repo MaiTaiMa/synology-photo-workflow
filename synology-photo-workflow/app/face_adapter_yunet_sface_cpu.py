@@ -2,7 +2,7 @@
 Datei: app/face_adapter_yunet_sface_cpu.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
-Projektversion: 7.7.0
+Projektversion: 7.8.0
 Funktion: Optionaler CPU-Referenzadapter für YuNet/SFace mit klaren Modellpfaden und defensiver Fehlergrenze.
 SICHERHEIT: Ohne explizite Modellpfade und installierte OpenCV-Contrib-Komponenten bleibt das Backend deaktiviert.
 """

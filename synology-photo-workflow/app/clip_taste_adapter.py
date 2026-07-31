@@ -2,7 +2,7 @@
 Datei: app/clip_taste_adapter.py
 Mitentwickler: MaiTai
 Erstellt: 2026-07-30
-Projektversion: 7.7.0
+Projektversion: 7.8.0
 Funktion: Optionaler CLIP-Adapter für personal_score via safetensors-Modell (CPU).
 SICHERHEIT: Ohne explizite Modellpfade und installierte Abhängigkeiten bleibt das Backend deaktiviert.
 """
