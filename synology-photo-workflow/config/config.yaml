@@ -259,7 +259,10 @@ family_recognition:
   # backends: optionaler Block für backend-spezifische Zusatzkonfigurationen.
   # Mögliche Werte: leeres oder befülltes Mapping.
   # Auswirkung: bleibt leer, solange kein Spezialbackend konfiguriert wird.
-  backends: {}
+  backends:
+    opencv_yunet_sface_cpu:
+      detector_model: ../NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/face_detection_yunet_2023mar.onnx
+      recognizer_model: ../NAS_EXAMPLE/TEMP/WORKFLOW_DATA/models/face_recognition_sface_2021dec.onnx
 
 # -----------------------------------------------------------------------------
 # automation
