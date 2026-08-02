@@ -2,6 +2,7 @@
 
 from . import VERSION
 from .work_units import select_next_work_units, WorkUnitPlan
+from .runtime import process_work_unit, process_physical_batch
 from pathlib import Path
 from typing import Any
 
@@ -19,13 +20,12 @@ def select_next_batches(config: dict[str, Any], phase: str) -> list[WorkUnitPlan
     return select_next_work_units(config, phase)
 
 
-def process_physical_batch_or_work_unit(batch_or_unit: Path | WorkUnitPlan, config: dict[str, Any]) -> Any:
+def process_physical_batch_or_work_unit(batch_or_unit: Path | WorkUnitPlan, config: dict[str, Any]) -> None:
     """Verarbeite physischen Batch oder WorkUnit.
     
     Paket 1: WorkUnit-Checkpoints, Resume-Logik
     """
-    # TODO: Vollstaendige Implementierung mit WorkUnit-State
-    # - load_work_unit_state() fuer Resume
-    # - recover_pending_mutation() fuer Recovery
-    # - write_work_unit_state() nach jedem Bild/Checkpoint
-    return None
+    if isinstance(batch_or_unit, WorkUnitPlan):
+        process_work_unit(batch_or_unit, config)
+    else:
+        process_physical_batch(batch_or_unit, config)
