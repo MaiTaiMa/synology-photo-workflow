@@ -3,9 +3,11 @@
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
 import json
+import shutil
 
 if TYPE_CHECKING:
     from .work_units import WorkUnitPlan
+    from .safety import validate_move_safe
 
 
 def _state_file_path(batch_path: Path) -> Path:
@@ -80,9 +82,27 @@ def load_work_unit_state(unit: "WorkUnitPlan") -> dict[str, Any]:
 def recover_pending_mutation(unit: "WorkUnitPlan", state: dict[str, Any], config: dict[str, Any]) -> None:
     """Stelle pending_mutation wieder her (Recovery nach Crash).
     
-    Paket 2: Recovery-Logik - fuehre unterbrochene Operation nach.
+    Paket 4: Recovery-Logik - fuehre unterbrochene Move-Operation nach.
     """
-    # TODO: Tatsaechliche Recovery-Implementierung
-    # - Image an Zielort verschieben (falls pending_mutation ein Move war)
-    # - State auf "completed" setzen
-    pass
+    pending = state.get("pending_mutation")
+    if not pending:
+        return
+    
+    source = Path(pending["source"])
+    dest = Path(pending["dest"])
+    
+    # Nur ausfuehren, wenn Source noch existiert (Crash waehrend Move)
+    if source.exists():
+        # Safety-Check vor Recovery-Move
+        if not dest.parent.exists():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Recovery-Move ausfuehren
+        shutil.move(str(source), str(dest))
+        
+        # State auf "completed" setzen nach erfolgreichem Recovery
+        write_work_unit_state(
+            unit, "completed",
+            image_path=pending.get("image_path"),
+            pending_mutation=None
+        )
