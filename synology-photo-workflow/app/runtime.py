@@ -27,7 +27,7 @@ def process_physical_batch(batch_path: Path, config: dict[str, Any]) -> None:
 
 
 def process_work_unit(unit: WorkUnitPlan, config: dict[str, Any]) -> None:
-    """Verarbeite WorkUnit mit Checkpoint-Logik.
+    """Verarbeite WorkUnit mit Checkpoint-Logik und tatsaechlicher Bildverarbeitung.
     
     Paket 1:
     - load_work_unit_state() fuer Resume
@@ -36,6 +36,11 @@ def process_work_unit(unit: WorkUnitPlan, config: dict[str, Any]) -> None:
     
     Paket 3:
     - validate_work_unit_images() VOR Verarbeitung
+    
+    Paket 4:
+    - validate_move_safe() pro Bild
+    - shutil.move() pro Bild
+    - pending_mutation fuer atomare Checkpoints
     """
     # Paket 3: Safety-Validierung VOR Verarbeitung
     validate_work_unit_images(unit, config)
@@ -48,16 +53,27 @@ def process_work_unit(unit: WorkUnitPlan, config: dict[str, Any]) -> None:
         recover_pending_mutation(unit, state, config)
     
     # Verarbeite Bilder mit Checkpoints
+    temp_images = Path(config["paths"]["temp_images"])
     for image_path in unit.image_paths:
-        # Checkpoint VOR Operation
-        write_work_unit_state(unit, "processing", image_path=str(image_path))
+        target_path = temp_images / image_path.name
         
-        # TODO: Tatsaechliche Bildverarbeitung
-        # - validate_move_safe()
-        # - shutil.move()
+        # Checkpoint VOR Operation mit pending_mutation
+        write_work_unit_state(
+            unit, "processing",
+            image_path=str(image_path),
+            pending_mutation={"source": str(image_path), "dest": str(target_path)}
+        )
         
-        # Checkpoint NACH Operation
-        write_work_unit_state(unit, "completed", image_path=str(image_path))
+        # Paket 4: Tatsaechliche Bildverarbeitung
+        validate_move_safe(image_path, target_path)
+        shutil.move(str(image_path), str(target_path))
+        
+        # Checkpoint NACH Operation (pending_mutation entfernt)
+        write_work_unit_state(
+            unit, "completed",
+            image_path=str(image_path),
+            pending_mutation=None
+        )
     
     # WorkUnit abgeschlossen
     write_work_unit_state(unit, "completed")
