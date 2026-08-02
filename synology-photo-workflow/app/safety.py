@@ -1,8 +1,10 @@
 """Safety: Validierungen, SafetyError."""
 
-from .work_units import WorkUnitPlan
+from typing import TYPE_CHECKING, Any
 from pathlib import Path
-from typing import Any
+
+if TYPE_CHECKING:
+    from .work_units import WorkUnitPlan
 
 
 class SafetyError(Exception):
@@ -23,7 +25,7 @@ def validate_move_safe(source: Path, dest: Path) -> None:
         raise SafetyError(f"Destination parent does not exist: {dest.parent}")
 
 
-def validate_work_unit_images(unit: WorkUnitPlan, config: dict[str, Any]) -> None:
+def validate_work_unit_images(unit: "WorkUnitPlan", config: dict[str, Any]) -> None:
     """Validiere alle Images einer WorkUnit vor Verarbeitung.
     
     Paket 3: Safety-Validierung fuer WorkUnit-Images.
