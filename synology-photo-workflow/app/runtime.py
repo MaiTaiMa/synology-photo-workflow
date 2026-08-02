@@ -1,6 +1,6 @@
 """Runtime: Batch/WorkUnit-Verarbeitung, Checkpoints, Recovery."""
 
-from .safety import SafetyError, validate_move_safe
+from .safety import SafetyError, validate_move_safe, validate_work_unit_images
 from .batch_state import write_state, load_state, write_work_unit_state, load_work_unit_state, recover_pending_mutation
 from .work_units import WorkUnitPlan
 from pathlib import Path
@@ -33,7 +33,13 @@ def process_work_unit(unit: WorkUnitPlan, config: dict[str, Any]) -> None:
     - load_work_unit_state() fuer Resume
     - recover_pending_mutation() fuer Recovery
     - write_work_unit_state() nach jedem Bild/Checkpoint
+    
+    Paket 3:
+    - validate_work_unit_images() VOR Verarbeitung
     """
+    # Paket 3: Safety-Validierung VOR Verarbeitung
+    validate_work_unit_images(unit, config)
+    
     # Resume: Lade bestehenden State
     state = load_work_unit_state(unit)
     
