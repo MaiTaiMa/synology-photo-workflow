@@ -1,9 +1,11 @@
 """Batch/WorkUnit-State: JSON-State-Machine, Checkpoints, Recovery."""
 
-from .work_units import WorkUnitPlan
+from typing import TYPE_CHECKING, Any
 from pathlib import Path
 import json
-from typing import Any
+
+if TYPE_CHECKING:
+    from .work_units import WorkUnitPlan
 
 
 def _state_file_path(batch_path: Path) -> Path:
@@ -11,7 +13,7 @@ def _state_file_path(batch_path: Path) -> Path:
     return batch_path.parent / f"{batch_path.name}.state.json"
 
 
-def _work_unit_state_file_path(unit: WorkUnitPlan) -> Path:
+def _work_unit_state_file_path(unit: "WorkUnitPlan") -> Path:
     """Pfad zur State-JSON-Datei fuer eine WorkUnit."""
     # WorkUnit-State wird im Batch-Verzeichnis gespeichert
     return unit.batch_path / f"work_unit_{unit.unit_id}.state.json"
@@ -38,7 +40,7 @@ def load_state(batch_path: Path) -> dict[str, Any]:
 
 
 def write_work_unit_state(
-    unit: WorkUnitPlan,
+    unit: "WorkUnitPlan",
     state: str,
     phase: str = "phase1",
     image_path: str | None = None,
@@ -64,7 +66,7 @@ def write_work_unit_state(
     state_file.write_text(json.dumps(data, indent=2))
 
 
-def load_work_unit_state(unit: WorkUnitPlan) -> dict[str, Any]:
+def load_work_unit_state(unit: "WorkUnitPlan") -> dict[str, Any]:
     """Lade WorkUnit-State aus JSON-Datei fuer Resume.
     
     Paket 2: Resume-Logik - lade letzten Checkpoint.
@@ -75,7 +77,7 @@ def load_work_unit_state(unit: WorkUnitPlan) -> dict[str, Any]:
     return json.loads(state_file.read_text())
 
 
-def recover_pending_mutation(unit: WorkUnitPlan, state: dict[str, Any], config: dict[str, Any]) -> None:
+def recover_pending_mutation(unit: "WorkUnitPlan", state: dict[str, Any], config: dict[str, Any]) -> None:
     """Stelle pending_mutation wieder her (Recovery nach Crash).
     
     Paket 2: Recovery-Logik - fuehre unterbrochene Operation nach.
