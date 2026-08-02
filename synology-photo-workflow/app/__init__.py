@@ -1,8 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: app/__init__.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-29
-Projektversion: 7.8.0
-Funktion: Paketmetadaten.
-"""
-VERSION = "7.8.0"
+"""Synology Photo Workflow."""
+
+VERSION = "7.9.0"
+CONTROL_FILE_VERSION = 1
+
+__all__ = ["VERSION", "CONTROL_FILE_VERSION"]
