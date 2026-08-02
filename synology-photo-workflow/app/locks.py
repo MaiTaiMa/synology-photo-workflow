@@ -1,39 +1,21 @@
-"""Projekt: Synology Photo Workflow
-Datei: app/locks.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Globaler produktiver Lock mit Besitzerinformationen und konservativer Stale-Analyse ohne Blindlöschung.
-SICHERHEIT: Konfigurations- und Lockfehler stoppen vor jeder produktiven Mutation.
-"""
-from __future__ import annotations
+"""Locks: Run-Lock, Batch-Lock."""
 
-import os
-import socket
-import uuid
+from .result_contract import atomic_json_write
+from . import VERSION
 from pathlib import Path
-from .safety import atomic_json, read_control_json, utcnow
+from datetime import datetime, timezone
+from typing import Any
 
 
-class RunLock:
-    """Schützt produktive Läufe; vorhandene Locks werden nie automatisch entfernt."""
-
-    def __init__(self, path: str | Path):
-        self.path = Path(path)
-        self.run_id = str(uuid.uuid4())
-
-    def inspect(self) -> dict:
-        """Liest den Eigentümerdatensatz für eine dokumentierte manuelle Stale-Lock-Entscheidung."""
-        return read_control_json(self.path, 'run_id')
-
-    def __enter__(self) -> 'RunLock':
-        if self.path.exists():
-            details = self.inspect()
-            raise RuntimeError(f'lock_active:manual_verification_required:host={details.get("host")}:pid={details.get("pid")}')
-        now = utcnow()
-        atomic_json(self.path, {'schema_version': 1, 'run_id': self.run_id, 'created_at': now, 'updated_at': now, 'producer_version': '7.7.0', 'owner': os.getuid(), 'host': socket.gethostname(), 'pid': os.getpid() }, 'run_id')
-        return self
-
-    def __exit__(self, *_: object) -> None:
-        if self.path.exists() and self.inspect().get('run_id') == self.run_id:
-            self.path.unlink()
+def write_run_lock(workflow_data: Path, run_id: str) -> dict[str, Any]:
+    """Schreibe Run-Lock atomar."""
+    data = {
+        "schema_version": 1,
+        "producer_version": VERSION,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "run_id": run_id,
+    }
+    lock_path = workflow_data / "runtime" / "run_lock.json"
+    atomic_json_write(str(lock_path), data)
+    return data
