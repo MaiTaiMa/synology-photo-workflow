@@ -76,14 +76,13 @@ Das Projekt trennt Betriebsschnittstelle, CLI, Fachmodule und den persistenten N
 ### 1.2 Projektstruktur
 
 - `NAS_EXAMPLE/`: Beispiel fuer den persistenten NAS-Bereich.
-  - `TEMP/`: Arbeitsbereich aus `config.paths.basedir`.
-    - `TEMP_SD/`: Neue Eingangsbatches.
-    - `TEMP_IMAGES/`: Phase-1-Review-Ausgabe.
-    - `TEMP_DONE/`: Menschlich freigegebene Uebergabe.
-    - `TEMP_ERROR/`: Quarantaene und Fehlerfaelle.
-    - `WORKFLOW_DATA/`: States, Logs, Summaries, Caches, Referenzen, Modelle.
-    - `MANUAL_KEEP/inbox/`: Manuelle Keep-Eingaenge.
-    - `MANUAL_KEEP/used/`: Bereits zugeordnete Keep-Dateien.
+  - `TEMP_SD/`: Neue Eingangsbatches.
+  - `TEMP_IMAGES/`: Phase-1-Review-Ausgabe.
+  - `TEMP_DONE/`: Menschlich freigegebene Uebergabe.
+  - `TEMP_ERROR/`: Quarantaene und Fehlerfaelle.
+  - `WORKFLOW_DATA/`: States, Logs, Summaries, Caches, Referenzen, Modelle.
+  - `MANUAL_KEEP/inbox/`: Manuelle Keep-Eingaenge.
+  - `MANUAL_KEEP/used/`: Bereits zugeordnete Keep-Dateien.
 - `synology-photo-workflow/`
   - `app/`: Python-Fachmodule und CLI.
   - `config/config.yaml`: Zentrale kommentierte Konfiguration.
