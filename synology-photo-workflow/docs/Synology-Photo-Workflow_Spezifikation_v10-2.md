@@ -7,7 +7,7 @@ Projektversion: 10.2
 Status: Vollstaendige, bereinigte und konsolidierte Fassung, erweitert um optionale PHASE3 (Finalisierung) und optionale Synology-Photos-API-Integration
 -->
 
-# Synology Photo Workflow – Spezifikation v10.2 – Teil 1 (Hauptdokument)
+# Synology Photo Workflow – Spezifikation v10.2
 
 **Status:** Verbindliche, alleinstehende Spezifikation fuer den sicheren, wiederaufnehmbaren Synology Photo Workflow (vollstaendig bereinigte und konsolidierte Fassung, erweitert um optionale PHASE3).
 
@@ -144,7 +144,7 @@ Das Projekt trennt Betriebsschnittstelle, CLI, Fachmodule und den persistenten N
   - `WORKFLOW_DATA/`: States, Logs, Summaries, Caches, Referenzen, Modelle.
   - `MANUAL_KEEP/inbox/`: Manuelle Keep-Eingaenge.
   - `MANUAL_KEEP/used/`: Bereits zugeordnete Keep-Dateien.
-  - `FINALIZED/` (optional): Lokaler Finalisierungsbereich, falls der veroeffentlichte Zielpfad nicht direkt verwendet wird.
+  - `04_TEMP_FINAL/` (optional): Lokaler Finalisierungsbereich, falls der veroeffentlichte Zielpfad nicht direkt verwendet wird.
 - `synology-photo-workflow/`
   - `app/`: Python-Fachmodule und CLI.
   - `config/config.yaml`: Zentrale kommentierte Konfiguration.
