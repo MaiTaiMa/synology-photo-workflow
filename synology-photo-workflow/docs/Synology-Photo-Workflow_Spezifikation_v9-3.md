@@ -1,14 +1,14 @@
 <!--
-Synology Photo Workflow – Spezifikation v9.2
-Datei: docs/Synology-Photo-Workflow_Spezifikation_v9-2.md
+Synology Photo Workflow – Spezifikation v9.3
+Datei: docs/Synology-Photo-Workflow_Spezifikation_v9-3.md
 Mitentwickler: MaiTaiMa (in Zusammenarbeit mit Perplexity AI)
 Erstellt: 2026-08-04
-Projektversion: 9.2
+Projektversion: 9.3
 Funktion: Vollstandige, alleinstehende Spezifikation ohne Verweise auf alte Versionen.
-Äı ̈nderungen in v9.2: Ordnerstruktur ohne TEMP-Elternordner, 2.4 vollstandig ersetzt, P4 (README-Mindestanforderung), P5 (Beispiel-README), Q (Projektstruktur GitHub).
+Äı ̈nderungen in v9.3: Ordnerstruktur ohne TEMP-Elternordner, 2.4 vollstandig ersetzt, P4 (README-Mindestanforderung), P5 (Beispiel-README), Q (Projektstruktur GitHub), R (Skript-Anforderungen).
 -->
 
-# Synology Photo Workflow – Spezifikation v9.2
+# Synology Photo Workflow – Spezifikation v9.3
 
 **Status:** Verbindliche, alleinstehende Spezifikation für den sicheren, wiederaufnehmbaren Synology Photo Workflow.
 
@@ -1079,36 +1079,147 @@ synology-photo-workflow/
 
 ---
 
-## Ende der Spezifikation v9.2
+### Anhang R – Skript-Anforderungen (Struktur, Kommentare, Lesbarkeit)
 
-**Status:** Alle Inhalte sind vollst ändig im Dokument enthalten. Keine Verweise auf alte Versionen oder externe Dateien.
+#### R1 – Geltungsbereich
 
-**Äı ̈nderungen in v9.2:**
+Diese Anforderung gilt für alle Skript-Dateien im Repository:
 
-1. **2.1 Kanonische Arbeitsordner:** Tabelle um `PHOTO_WORKFLOW/README.md` erg änzt.
-2. **2.4 Manual Keep, inbox, used:** Vollst ändig ersetzt durch 2.4.1 bis 2.4.5 (Ordnerstruktur, Zuordnungslogik, Fehlerf älle, Konfiguration, Implementierung).
-3. **Anhang P4:** Neu hinzugef ügt – Mindestanforderung an README-Dateien (verbindlich).
-4. **Anhang P5:** Neu hinzugef ügt – Beispiel-README f ür TEMP_SD (Muster).
-5. **Anhang Q:** Neu hinzugef ügt – Projektstruktur (GitHub-Repository) mit Ordnerbaum, Datenablage und wichtigen Regeln.
-6. **Alle anderen Bereiche:** Unver ändert erhalten.
+- Shell-Skripte (`.sh`) in `scripts/`
+- Python-Skripte (`.py`) in `scripts/` oder anderen Verzeichnissen
+- CI/CD-Skripte in `.github/workflows/`
+- Hilfskripte für Tests oder Deployment
 
----
+#### R2 – Struktur-Anforderungen
 
-**FERTIG!**
+Jede Skript-Datei MUSS folgende Struktur aufweisen:
 
-Ich habe die vollständige Spezifikation v9.2 erstellt und als Datei gespeichert:
+1. **Header-Kommentar** (obligatorisch, 6–10 Zeilen):
+   - Skript-Name und Pfad
+   - Zweck (1–2 S ätze)
+   - Autor und Erstellungsdatum
+   - Version (z. B. `Version: 1.0`)
+   - Abh ängigkeiten (z. B. `Requires: bash, docker, exiftool`)
+   - Verwendung (z. B. `Usage: ./run-phase1.sh <batch-id>`)
 
-- **Dateiname:** `Synology-Photo-Workflow_Spezifikation_v9-2.md`
-- **Dateigröıı·e:** Ca. 65 KB
-- **Äı ̈nderungen:** Ausschliesslich 2.1, 2.4, Anhang P4, P5, Q (wie von Ihnen beauftragt)
-- **Unver ändert:** Alle anderen Kapitel und Anh änge (0–9, A–P3, E–P3)
+2. **Abschnitts-Kommentare** (obligatorisch, 2–3 Zeilen pro Abschnitt):
+   - Jeder logische Abschnitt MUSS mit einem Kommentar überschrieben sein
+   - Beispiel: `# === Phase 1: Inventar erstellen ===`
+   - Beispiel: `# === Validierung: Pfade prüfen ===`
 
-Die Datei enth ält jetzt:
-✅ Ordnerbaum ohne `TEMP/`-Elternordner (in 2.1 erg änzt)
-✅ Abschnitt 2.4 vollst ändig ersetzt (Manual Keep, inbox, used)
-✅ P4 (README-Mindestanforderung mit 8 Pflichtfeldern)
-✅ P5 (Beispiel-README f ür TEMP_SD als Muster)
-✅ Q (Projektstruktur GitHub mit Ordnerbaum, Datenablage, Regeln)
-✅ Alle anderen Bereiche unver ändert erhalten
+3. **Funktions-Kommentare** (obligatorisch, 3–5 Zeilen pro Funktion):
+   - Jede Funktion MUSS mit einem Kommentar beschrieben sein
+   - Zweck, Eingaben, Ausgaben, R ückgabewert
+   - Beispiel:
+     ```bash
+     # create_manifest()
+     # Zweck: Erstellt Batch-Manifest mit Hashes
+     # Eingabe: Pfad zum Batch-Ordner
+     # Ausgabe: manifest.json im Batch-Ordner
+     # Rückgabe: 0 bei Erfolg, 1 bei Fehler
+     ```
 
-**Soll ich die Datei jetzt auf GitHub pushen oder möchten Sie weitere Anpassungen vornehmen?**
+4. **Einzeiler-Kommentare** (empfohlen, bei komplexen Zeilen):
+   - Komplexe Befehle oder Bedingungen MÜı ̈SSEN kommentiert sein
+   - Beispiel: `if [ -z "$BATCH_ID" ]; then  # BATCH_ID ist Pflichtargument`
+
+#### R3 – Kommentar-Dichte und Lesbarkeit
+
+1. **Mindestkommentierung:**
+   - Jede Funktion: 3–5 Zeilen Kommentar
+   - Jeder Abschnitt: 2–3 Zeilen Kommentar
+   - Header: 6–10 Zeilen Kommentar
+   - Mindestens 20 % des Skript-Inhalts MUSS Kommentare sein
+
+2. **Selbsterklärende Namen:**
+   - Variablen, Funktionen und Konstanten MÜı ̈SSEN sprechende Namen haben
+   - Beispiel: `BATCH_ID` statt `id`, `create_manifest()` statt `do_it()`
+
+3. **Konsistente Formatierung:**
+   - Einr ückung: 2–4 Leerzeichen oder Tabs (konsistent im ganzen Skript)
+   - Leerzeilen: Zwischen Abschnitten und Funktionen
+   - Max. 80–100 Zeichen pro Zeile (f ür Lesbarkeit)
+
+#### R4 – Beispiel-Header (Shell-Skript)
+
+```bash
+#!/bin/bash
+#
+# Skript: scripts/run-phase1.sh
+# Zweck: F ührt Phase 1 f ür einen Batch aus (Inventar, Culling, Metadaten)
+# Autor: MaiTaiMa
+# Erstellt: 2026-08-04
+# Version: 1.0
+# Requires: bash, docker, exiftool
+# Usage: ./run-phase1.sh <batch-id>
+#
+# Änderungsprotokoll:
+#   2026-08-04 | v1.0 | Initiale Version
+#
+```
+
+#### R5 – Beispiel-Abschnitt (Shell-Skript)
+
+```bash
+# === Validierung: Pflichtargumente prüfen ===
+# Zweck: Stellt sicher, dass alle erforderlichen Argumente übergeben wurden
+# Eingabe: $1 (BATCH_ID)
+# Ausgabe: Fehlermeldung bei fehlendem Argument, Abbruch mit Exit-Code 1
+if [ -z "$BATCH_ID" ]; then
+    echo "Fehler: BATCH_ID ist erforderlich"
+    echo "Usage: ./run-phase1.sh <batch-id>"
+    exit 1
+fi
+```
+
+#### R6 – Beispiel-Funktion (Shell-Skript)
+
+```bash
+# create_manifest()
+# Zweck: Erstellt Batch-Manifest mit Hashes für alle JPGs und ARWs
+# Eingabe: $1 (Pfad zum Batch-Ordner)
+# Ausgabe: manifest.json im Batch-Ordner (mit batchid, image_count, hashes)
+# Rückgabe: 0 bei Erfolg, 1 bei Fehler
+# Abh ängigkeiten: jq, sha256sum
+create_manifest() {
+    local batch_path="$1"
+    
+    # Inventar: Alle JPGs und ARWs zählen
+    local jpg_count=$(find "$batch_path" -name "*.jpg" | wc -l)
+    local arw_count=$(find "$batch_path" -name "*.arw" | wc -l)
+    
+    # Manifest erstellen (JSON-Struktur)
+    cat > "$batch_path/manifest.json" <<EOF
+{
+    "batchid": "$BATCH_ID",
+    "image_count": $jpg_count,
+    "arw_count": $arw_count,
+    "created_at": "$(date -Iseconds)"
+}
+EOF
+    
+    echo "Manifest erstellt: $batch_path/manifest.json"
+    return 0
+}
+```
+
+#### R7 – Validierung und Abnahme
+
+Jede Skript-Datei MUSS vor der ersten Verwendung durch einen Validierungsschritt geprüft werden:
+
+1. Header-Kommentar vorhanden (6–10 Zeilen)?
+2. Abschnitts-Kommentare vorhanden (2–3 Zeilen pro Abschnitt)?
+3. Funktions-Kommentare vorhanden (3–5 Zeilen pro Funktion)?
+4. Mindestens 20 % Kommentare im gesamten Skript?
+5. Sprechennde Namen für Variablen, Funktionen, Konstanten?
+6. Konsistente Formatierung (Einr ückung, Leerzeilen, Zeilenl änge)?
+
+Bei Fehlern: Skript als ung ültig markieren, im Log dokumentieren, manuelle Korrektur erforderlich.
+
+#### R8 – Versionierung und Änderungshistorie
+
+- **Version:** Jede Skript-Datei MUSS eine Versionsnummer im Header enthalten (z. B. `Version: 1.0`)
+- **Änderungsprotokoll:** Jede Änderung MUSS im Header dokumentiert werden (Datum, Autor, Kurzbeschreibung)
+- **CHANGELOG.md:** Jede Änderung MUSS zus ätzlich im CHANGELOG.md dokumentiert werden
+
+-
