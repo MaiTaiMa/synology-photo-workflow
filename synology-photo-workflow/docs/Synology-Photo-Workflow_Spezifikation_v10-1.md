@@ -1,15 +1,15 @@
 <!--
-Synology Photo Workflow – Spezifikation v10.0
-Datei: docs/Synology-Photo-Workflow_Spezifikation_v10-0.md
+Synology Photo Workflow – Spezifikation v10.1
+Datei: docs/Synology-Photo-Workflow_Spezifikation_v10-1.md
 Mitentwickler: MaiTaiMa (in Zusammenarbeit mit Perplexity AI)
 Erstellt: 2026-08-04
-Projektversion: 10.0
-Status: Vollstaendige, erweiterte Fassung mit allen Anhaengen (A–T)
+Projektversion: 10.1
+Status: Vollstaendige, bereinigte und konsolidierte Fassung
 -->
 
-# Synology Photo Workflow – Spezifikation v10.0
+# Synology Photo Workflow – Spezifikation v10.1
 
-**Status:** Verbindliche, alleinstehende Spezifikation fuer den sicheren, wiederaufnehmbaren Synology Photo Workflow (vollstaendig erweiterte Fassung).
+**Status:** Verbindliche, alleinstehende Spezifikation fuer den sicheren, wiederaufnehmbaren Synology Photo Workflow (vollstaendig bereinigte und konsolidierte Fassung).
 
 **Zielsetzung:** Dieses Dokument ist die alleinige normative Quelle fuer Entwicklung, Betrieb, Test und Aenderungen. Es enthaelt alle Informationen aus der vorherigen harmonisierten Fassung, erweitert um die Referenzpool-Verwaltung, Face-Crops, dynamisches Ranking und vollstaendige Anhaenge.
 
@@ -21,10 +21,10 @@ Status: Vollstaendige, erweiterte Fassung mit allen Anhaengen (A–T)
 
 | Feld | Wert |
 |------|------|
-| Version | 10.0 |
+| Version | 10.1 |
 | Datum | 2026-08-04 |
-| Status | Vollstaendig erweitert (alle Kapitel und Anhaenge integriert) |
-| Vorgaenger | 9.9 |
+| Status | Vollstaendig bereinigt und konsolidiert |
+| Vorgaenger | 10.0 |
 | Aenderungs-Historie | Siehe Kapitel 6.4 und Anhang T |
 
 ### 0.2 Geltungsbereich und Zielsetzung
@@ -287,7 +287,7 @@ Es entsteht kein Trainingslabel.
     "timestamp": "2024-08-15T14:30:00Z",
     "hash": "a3f7c2e1b5d8f9e0c4a6b7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8",
     "reason": null,
-    "producer_version": "10.0"
+    "producer_version": "10.1"
 }
 ```
 
@@ -405,7 +405,7 @@ Es entsteht kein Trainingslabel.
 ### 4.6 Manual Keep
 
 - **Status:** Pflicht.
-- **Zweck:** Ordnet extern (z. B. per WhatsApp) vorab ausgewaehlte, oft komprimierte/kleine Bilder ihrem Original im aktuellen Batch zu und erzwingt fuer dieses keep.
+- **Zweck:** Ordnet extern (z. B. per WhatsApp) vorab ausgewaehlte, oft komprimierte/kleine Bilder ihrem Original im aktuellen Batch zu und erzwingt fuer dieses `keep`.
 - **Ablauf:**
   1. Zweistufig: schneller aufloesungsrobuster Vorfilter (Seitenverhaeltnis, Perceptual Hash).
   2. Danach strenge normalisierte Endpruefung (Verifikationsscore auf EXIF-korrigierten, gleich skalierten Bildern).
@@ -559,7 +559,7 @@ Die Auswahl neuer Vorschlaege folgt derselben Logik:
 3. Kandidaten duerfen bestehende aktive Referenzen nicht zu stark duplizieren.
 4. Es wird nach Nutzen fuer den Pool sortiert.
 5. Erst danach werden `max_new_per_batch` und `max_new` angewendet.
-6. Nur die besten zulässigen Kandidaten werden als `new_refs/` oder `new_faces/` gespeichert.
+6. Nur die besten zulaessigen Kandidaten werden als `new_refs/` oder `new_faces/` gespeichert.
 
 **Face-Crop-Erstellung:** Face-Kandidaten werden zusaetzlich als quadratischer Gesichtsausschnitt gespeichert (z. B. 256×256 Pixel). Der Crop enthaelt nur das Gesicht, kein Umfeld. Die Metadaten enthalten Bounding Box, Gesichtskonfidenz und Originalreferenz.
 
@@ -698,6 +698,7 @@ Scheitert ein Schritt, bleibt die vorherige Poolversion aktiv; der Fehler wird i
 
 | Version | Datum | Autor | Aenderung |
 |---------|-------|-------|----------|
+| 10.1 | 2026-08-04 | MaiTaiMa + Perplexity AI | Bereinigte, konsolidierte Fassung: einheitliche Terminologie, konsistente Querverweise, harmonisierter Stil, vollstaendige Inhalte. |
 | 10.0 | 2026-08-04 | MaiTaiMa + Perplexity AI | Erweiterung um Referenzpool-Verwaltung, Face-Crops, dynamisches Ranking und neue Anhaenge. |
 | 9.9 | 2026-08-04 | MaiTaiMa + Perplexity AI | Harmonisierte Fassung mit allen Anhaengen (A–P). |
 | 9.8 | 2026-08-03 | MaiTaiMa + Perplexity AI | Rechtschreib- und Formatkorrekturen, neuer Abschnitt "Architektur und Compliance". |
@@ -819,8 +820,6 @@ Jedes Backend MUSS folgende Felder bereitstellen:
 | `metric` | string | Metrik |
 | `selection_fingerprint` | string | SHA256 der Auswahl |
 | `cache_fingerprint` | string | SHA256 aus allen obigen Feldern |
-
-**Ergaenzung in v10.0:**
 
 - `selection_fingerprint` umfasst den Inhalt der aktiven `selection.json`, die Dateihashes der aktiven Referenzen sowie Auswahlparameter.
 - Jede Aenderung dieses Fingerprints erzwingt den Neuaufbau des Personen-Referenzindex.
@@ -1466,7 +1465,7 @@ Schritte:
 
 ---
 
-### Anhang T — Migration v9.8 → v10.0
+### Anhang T — Migration v9.8 → v10.1
 
 #### T1 — Migrationsschritte
 
