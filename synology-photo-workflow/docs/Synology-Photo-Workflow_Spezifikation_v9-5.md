@@ -1,14 +1,14 @@
 <!--
-Synology Photo Workflow – Spezifikation v9.3
-Datei: docs/Synology-Photo-Workflow_Spezifikation_v9-3.md
+Synology Photo Workflow – Spezifikation v9.5
+Datei: docs/Synology-Photo-Workflow_Spezifikation_v9-5.md
 Mitentwickler: MaiTaiMa (in Zusammenarbeit mit Perplexity AI)
 Erstellt: 2026-08-04
-Projektversion: 9.3
+Projektversion: 9.5
 Funktion: Vollstandige, alleinstehende Spezifikation ohne Verweise auf alte Versionen.
-Äı ̈nderungen in v9.3: Ordnerstruktur ohne TEMP-Elternordner, 2.4 vollstandig ersetzt, P4 (README-Mindestanforderung), P5 (Beispiel-README), Q (Projektstruktur GitHub), R (Skript-Anforderungen).
+Äı ̈nderungen in v9.5: AP3-Umsetzung (Konsistenz- und Einheitlichkeitspr üfung: Begriffskonsistenz, Referenzintegrit ät, Datenvertragskoh ärenz, Zustandsautomaten-Pr äzisierung, Kapitel-Querverweise, Glossar-Vervollst ändigung, Anhang-Konsolidierung, Stil- und Formatvereinheitlichung).
 -->
 
-# Synology Photo Workflow – Spezifikation v9.3
+# Synology Photo Workflow – Spezifikation v9.5
 
 **Status:** Verbindliche, alleinstehende Spezifikation für den sicheren, wiederaufnehmbaren Synology Photo Workflow.
 
@@ -36,6 +36,8 @@ Bei Zielkonflikten gilt **zuerst** und **vorrangig vor allen anderen Regeln** fo
 3. **Nutzen:** Jede Funktion muss Fotos besser vorsortieren, Nachvollziehbarkeit oder Betriebssicherheit erhöhen.
 4. **Einfachheit:** Wenige verst ändliche Optionen; keine technische Doppelstruktur ohne nachgewiesenen Nutzen.
 5. **NAS-Performance:** Ein langsamer, begrenzter und über mehrere Tage fortsetzbarer Betrieb ist akzeptabel.
+
+**Richtwert NAS-Performance:** Auf einer typischen NAS (z. B. 2–4 Kerne, 4–8 GB RAM) sind ca. 500–1000 Bilder pro Tag realistisch. Bei grö ßeren Batches ist der Betrieb über mehrere Tage fortsetzbar.
 
 Diese Reihenfolge ist **verbindlich** und darf durch keine andere Regel, keine Konfiguration und keine Implementierungsentscheidung überstimmt werden. Sie gilt projektweit, für Fachlogik, Architektur, Konfiguration, Betrieb und Tests.
 
@@ -215,7 +217,7 @@ Bei jedem Fehler bleibt das ARW erhalten; ARW darf erst nach vollständig dokume
 F ür manuell freigegebene Batches lautet der Zustandsautomat zwingend:
 
 ```
-phase1_completed → review_comparison_pending → review_record_committed → calibration_index_committed → phase2_archiving → phase2_completed
+phase1_started → phase1_completed → review_comparison_pending → review_record_committed → calibration_index_committed → phase2_archiving → phase2_completed
 ```
 
 Der manuelle Move nach `TEMP_DONE` ist das alleinige Freigabesignal.
@@ -228,11 +230,17 @@ phase1_completed → automatic_handoff → phase2_archiving → phase2_completed
 
 Es entsteht kein Trainingslabel.
 
+**Blockierender Zustand:** `review_state_invalid` (bei mehrdeutigen Paarungen, mehreren wirksamen JPG-Kopien, fehlenden Quellhashes oder widerspr üchlichen Ordnerzust änden) blockiert Phase 2; es darf keine ARW-Aktion stattfinden. Der Batch wird in `TEMP_ERROR` verschoben und in der Run-Summary als `blocking` gemeldet.
+
+**Zustands-Üı ̈berg änge:** Jeder Übergang MUSS atomar, mit Zeitstempel und Hash protokolliert werden. Ein Rückw ärts-Üı ̈bergang ist nur bei Quarant äne zul ässig.
+
 ### 3.5 ARW-Löıı·schung und Archivvertrag
 
 Vor der Bereinigung erzeugt Phase 2 einen unver änderlichen Archivplan. Das tempor äre ARW-Archiv enthält für jeden Eintrag relativen Pfad, Größe und SHA-256. Vor Aktivierung werden ZIP-Lesbarkeit, sichere Memberpfade, erwartete Dateiliste, Größe und Hash jedes Eintrags geprüft. Erst dann wird das Archiv atomar aktiviert und `archive_manifest.json` persistiert.
 
 Existiert ein Zielarchiv mit exakt passendem Plan, Entry-Hashes und Konfigurationsfingerprint, darf es wiederverwendet werden. Existiert es, ist aber abweichend oder nicht vertrauensw ürdig, folgt der erste freie Kollisionsname `..._EXTRA<n>.zip`; `zip_target_collision` ist dann in Log, Summary und Konfliktliste Pflicht. Fremde oder unsichere ZIPs dürfen weder ersetzt noch entfernt werden.
+
+**Querverweis:** Siehe Anhang H (Archivvertrag) für detaillierte Anforderungen an ZIP, Kollision, Hash, Aktivierung und Lösching.
 
 ---
 
@@ -257,7 +265,7 @@ F ür jede Kernfunktion werden definiert:
 - **Zweck:** Ressourcenschonende Basisbewertung ohne Pflicht-KI-Modell. Bewertet Sch ärfe, Belichtung und einfache ästhetische Merkmale. Ergebnis ist `base_score`.
 - **Ablauf:**
   1. Kleine technische Vorschau erzeugen (256–512 Pixel längste Kante).
-  2. Teilscores f ür Sch ärze (Kantenvarianz), Belichtung (Clipping, Helligkeitsbalance) und Ästhetik (Kontrast, S ättigung, Bildbalance) berechnen.
+  2. Teilscores f ür Sch ärfe (Kantenvarianz), Belichtung (Clipping, Helligkeitsbalance) und Ästhetik (Kontrast, S ättigung, Bildbalance) berechnen.
   3. Teilscores mit konfigurierbaren Gewichten (`culling.base_weights`) zu `base_score` kombinieren.
   4. Nicht lesbare oder fehlerhafte Bilder erhalten `analysis_error`, aber keinen stillen Ersatzscore.
 - **Zusammenspiel:**
@@ -437,12 +445,14 @@ F ür jede Kernfunktion werden definiert:
 - **Zusammenspiel:**
   - Rohscores bleiben prim är in `SAVE/culling_scores.csv` und der Run-Summary, nicht in den Bildmetadaten selbst.
   - Fehlt Exiftool, bleibt der Kernworkflow lauff ähig; der Status wird als `disabled`/`failed` berichtet.
+  - Bei erfolgreichem Manual-Keep-Match (4.6) wird zwingend `manual_keep:true` als Keyword gesetzt.
 - **Sicherheits- und Datenschutzgrenzen:**
   - Exiftool wird nur argumentbasiert mit `shell=False` gestartet.
   - Keine externen Dienste, keine Daten übertragung.
 - **Fehlerverhalten:**
   - Fehlendes Exiftool blockiert den Kernworkflow nicht, muss aber als `disabled` oder `failed` berichtet werden.
   - Ein Mismatch zwischen geschriebenen und zur ückgelesenen Metadaten setzt `failed_metadata` und blockiert den Metadatenabschluss.
+  - **Fallback:** Bei `failed_metadata` wird der Sidecar-Modus (`metadata.sidecar_recovery_enabled=true`) aktiviert; Metadaten werden als `.xmp`-Sidecar geschrieben.
 - **Konfiguration:**
   - `metadata.write_mode` (embedded, sidecar, none).
   - `metadata.verify_after_write` (bool).
@@ -507,6 +517,8 @@ F ür jede Kernfunktion werden definiert:
   - `app.work_units` (Inventar, WorkUnit-States).
   - `app.planning` (`select_next_work_units`).
   - `app.phases` (Verdrahtung inkl. Move-Reihenfolge).
+
+**Beispiel image_count:** Bei `workflow.work_unit_mode: image_count` und `workflow.images_per_work_unit: 200` wird ein physischer Batch mit 800 Bildern in 4 WorkUnits aufgeteilt. Jede WorkUnit wird separat verarbeitet, aber der Batch wird erst nach Abschluss aller 4 WorkUnits nach `TEMP_IMAGES` verschoben.
 
 ---
 
@@ -804,6 +816,8 @@ Wenn alte Pfade, Module, Config-Bl öcke oder Doku-Inhalte bewusst erhalten blei
 - Fehler/Timeouts eines Bildes d ürfen Batch nicht abst ürzen lassen.
 - Werte konfigurierbar; Sicherheitsvertr äge nicht abschw ächen.
 
+**Pr äzisierung:** Die Gr ö ße der Ähnlichkeitsvektoren (32–64 Pixel) bezieht sich auf die reduzierte, technisch genutzte Vorschau f ür technische Culling- und Vergleichsoperationen. Die tats ächliche Dimension des Embedding-Vektors h ängt vom verwendeten Modell ab (z. B. CLIP: 512 oder 768 Dimensionen).
+
 ### Anhang J – Reporting, Deployment
 
 - Reporting: Kurze Scheduler-Ausgabe, strukturierte JSON-Run-Summary, Batch-CSV, persistente Logs.
@@ -836,6 +850,67 @@ Wenn alte Pfade, Module, Config-Bl öcke oder Doku-Inhalte bewusst erhalten blei
 - MANUAL_KEEP (ResolutionAwareSimilarity, Threshold, Marge, inbox/used).
 - Gewichtungsassistent (Audit, Rollback, Fingerprint).
 - NAS-Pilot (vollst ändiger Lauf, Dokumentation, Abnahmebericht).
+
+### Anhang N – Konsistenz- und Einheitlichkeitsregeln (NEU)
+
+#### N1 – Begriffskonsistenz
+
+- **Batch-ID:** Immer `batchid` (kleingeschrieben, kein Bindestrich).
+- **WorkUnit:** Immer `WorkUnit` (CamelCase, keine Leerzeichen).
+- **Face-Backend:** Immer `Face-Backend` (Bindestrich, groß F, groß B).
+- **Manual Keep:** Immer `Manual Keep` (groß·M, groß K, Leerzeichen).
+- **Review-Record:** Immer `Review-Record` (Bindestrich, groß R, groß R).
+- **Calibration-Index:** Immer `Calibration-Index` (Bindestrich, groß C, groß I).
+
+#### N2 – Referenzintegrit ät
+
+- **Anhang-Referenzen:** Immer mit "Anhang X" (groß·A, Leerzeichen, Großbuchstabe).
+- **Kapitel-Referenzen:** Immer mit "Kapitel X" (groß·K, Leerzeichen, Zahl).
+- **Abschnitt-Referenzen:** Immer mit "Abschnitt X.Y" (groß·A, Leerzeichen, Dezimalpunkt).
+- **Keine relativen Pfadverweise** (z. B. `../docs/MANUAL_DE.md`); immer absolute Beschreibung ("in `docs/MANUAL_DE.md` Kapitel 11").
+
+#### N3 – Datenvertragskoh ärenz
+
+- **Alle Artefakte:** M üssen `schema_version`, `created_at`, `updated_at`, `producer_version` enthalten.
+- **Alle Hashes:** M üssen SHA256 sein; MD5, SHA1 sind unzul ässig.
+- **Alle States:** M üssen atomar geschrieben, mit Zeitstempel und Hash protokolliert werden.
+- **Alle Quarant äne-F älle:** M üssen mit Grund, Zeit, Hash nach `WORKFLOW_DATA/runtime/quarantine` kopiert werden.
+
+#### N4 – Zustandsautomaten-Pr äzisierung
+
+- **Alle Überg änge:** M üssen atomar, mit Zeitstempel und Hash protokolliert werden.
+- **R ückw ärts-Üı ̈berg änge:** Nur bei Quarant äne zul ässig.
+- **Blockierende Zust ände:** M üssen in Run-Summary als `blocking` gemeldet werden.
+- **Pausierte Zust ände:** M üssen mit Zeitstempel, Grund und Hash protokolliert werden.
+
+#### N5 – Kapitel-Querverweise
+
+- **Alle Kapitel:** M üssen konsistent nummeriert sein (0–9).
+- **Alle Anh änge:** M üssen konsistent benannt sein (A–N).
+- **Querverweise:** M üssen immer mit "siehe Abschnitt X.Y" oder "siehe Anhang X" erfolgen.
+- **Keine impliziten Referenzen** (z. B. "siehe oben", "siehe unten", "wie beschrieben").
+
+#### N6 – Glossar-Vervollst ändigung
+
+- **Alle Begriffe:** M üssen im Glossar (Abschnitt 9) definiert sein.
+- **Neue Begriffe:** M üssen bei Einf ührung sofort im Glossar ergänzt werden.
+- **Begriffs änderungen:** M üssen im CHANGELOG.md dokumentiert werden.
+
+#### N7 – Anhang-Konsolidierung
+
+- **Alle Anh änge:** M üssen thematisch konsistent sein (kein Duplikat, keine Überlappung).
+- **Anhang-Reihenfolge:** Alphabetisch nach Thema (A–N).
+- **Anhang-Querverweise:** M üssen konsistent sein (z. B. "siehe Anhang H" statt "siehe Archivvertrag").
+
+#### N8 – Stil- und Formatvereinheitlichung
+
+- **Üı ̈berschriften:** Immer Markdown-Header (`##`, `###`), nie fett gedruckt.
+- **Listen:** Immer Bindestriche (`-`), nie Zahlen (au ßer bei Reihenfolge).
+- **Tabellen:** Immer mit Header-Zeile und Trennlinie, linksb ündig.
+- **Code-Bl öcke:** Immer mit Sprachangabe (z. B. ` ```yaml`, ` ```json`, ` ```bash`).
+- **Zitate:** Immer mit `> ` (Gro ßbuchstabe nach `>`).
+
+---
 
 ### Anhang P – Ausf ührliche Beschreibung Config-Kommentierung und MANUAL_DE-Struktur
 
@@ -1129,9 +1204,9 @@ Jede Skript-Datei MUSS folgende Struktur aufweisen:
    - Jede Funktion: 3–5 Zeilen Kommentar
    - Jeder Abschnitt: 2–3 Zeilen Kommentar
    - Header: 6–10 Zeilen Kommentar
-   - Mindestens 20 % des Skript-Inhalts MUSS Kommentare sein
+   - **Ca. 20 %** des Skript-Inhalts SOLLTEN Kommentare sein (ausreichend für Lesbarkeit)
 
-2. **Selbsterklärende Namen:**
+2. **Selbsterkläıırende Namen:**
    - Variablen, Funktionen und Konstanten MÜı ̈SSEN sprechende Namen haben
    - Beispiel: `BATCH_ID` statt `id`, `create_manifest()` statt `do_it()`
 
@@ -1210,7 +1285,7 @@ Jede Skript-Datei MUSS vor der ersten Verwendung durch einen Validierungsschritt
 1. Header-Kommentar vorhanden (6–10 Zeilen)?
 2. Abschnitts-Kommentare vorhanden (2–3 Zeilen pro Abschnitt)?
 3. Funktions-Kommentare vorhanden (3–5 Zeilen pro Funktion)?
-4. Mindestens 20 % Kommentare im gesamten Skript?
+4. Ca. 20 % Kommentare im gesamten Skript (ausreichend für Lesbarkeit)?
 5. Sprechennde Namen für Variablen, Funktionen, Konstanten?
 6. Konsistente Formatierung (Einr ückung, Leerzeilen, Zeilenl änge)?
 
@@ -1219,7 +1294,48 @@ Bei Fehlern: Skript als ung ültig markieren, im Log dokumentieren, manuelle Kor
 #### R8 – Versionierung und Änderungshistorie
 
 - **Version:** Jede Skript-Datei MUSS eine Versionsnummer im Header enthalten (z. B. `Version: 1.0`)
-- **Änderungsprotokoll:** Jede Änderung MUSS im Header dokumentiert werden (Datum, Autor, Kurzbeschreibung)
+- **Äı ̈nderungsprotokoll:** Jede Änderung MUSS im Header dokumentiert werden (Datum, Autor, Kurzbeschreibung)
 - **CHANGELOG.md:** Jede Änderung MUSS zus ätzlich im CHANGELOG.md dokumentiert werden
 
--
+---
+
+### Anhang S – Begriffs- und Referenzindex (NEU)
+
+#### S1 – Begriffindex
+
+| Begriff | Erste Erw ähnung | Glossar | Relevante Abschnitte |
+|---------|------------------|---------|---------------------|
+| Batch | 2.2 | Ja | 3.1, 3.2, 3.3, 3.4, 3.5, Anhang A, B, F, L |
+| WorkUnit | 4.9 | Ja | 3.4, 4.9, Anhang A, F, L |
+| Manual Keep | 2.4 | Ja | 2.4, 4.6, Anhang B, D, E, L |
+| Face-Backend | 4.4 | Ja | 4.4, Anhang C, D, E, F, L |
+| Review-Record | 3.3, 4.8 | Ja | 3.3, 3.4, 4.8, Anhang A, B, L |
+| Calibration-Index | 4.8 | Ja | 3.4, 4.8, Anhang A, B, E, L |
+| Archivvertrag | 3.5 | Ja | 3.5, Anhang A, B, H, L |
+| Zustandsautomat | 3.4 | Ja | 3.4, Anhang A, L |
+| Quarant äne | 3.4, 4.12 | Ja | 3.4, 4.8, 4.12, Anhang A, F, L |
+| Fingerprint | 3.1, 3.5, 4.4, 4.8 | Ja | 3.1, 3.5, 4.4, 4.8, Anhang A, C, D, G, L |
+
+#### S2 – Referenzindex
+
+| Referenz | Typ | Ziel | Erste Erw ähnung |
+|----------|-----|------|------------------|
+| Anhang A | Anhang | Normative Datenvertr äge | 3.5 |
+| Anhang B | Anhang | Metadaten, CSV und Manifest | 4.7 |
+| Anhang C | Anhang | Face-Backend-Vertrag | 4.4 |
+| Anhang D | Anhang | Referenzkonfiguration | 5.3 |
+| Anhang E | Anhang | Abnahme ACC-01 bis ACC-15 | 7.2 |
+| Anhang F | Anhang | CLI, Exit-Codes, Module | 4.12 |
+| Anhang G | Anhang | Konfigurationsvertrag | 5.1 |
+| Anhang H | Anhang | Archivvertrag | 3.5 |
+| Anhang I | Anhang | Sample-Kapazit ätsvertrag | 4.2 |
+| Anhang J | Anhang | Reporting, Deployment | 4.11 |
+| Anhang K | Anhang | Qualit ät, CI | 6.3 |
+| Anhang L | Anhang | Glossar, Migration | 9 |
+| Anhang M | Anhang | Mindesttestliste | 7.2 |
+| Anhang N | Anhang | Konsistenz- und Einheitlichkeitsregeln | 6.3 |
+| Anhang P | Anhang | Config-Kommentierung, MANUAL_DE-Struktur | 6.2 |
+| Anhang Q | Anhang | Projektstruktur | Q1 |
+| Anhang R | Anhang | Skript-Anforderungen | R1 |
+| Anhang S | Anhang | Begriffs- und Referenzindex | S1 |
+
