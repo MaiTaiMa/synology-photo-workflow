@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_phase_integration.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Phase-1-Manifest, kanonisches CSV und sichtbare Review-Ablage mit synthetischen Medien.
-SICHERHEIT: Phase 1 mutiert erst nach Inventarprüfung; Phase 2 bleibt freigabegebunden.
+"""tests/test_phase_integration.py
+
+Spezifikation v10.2 - AP4
 """
 from pathlib import Path
 from app.phases import phase1
@@ -16,8 +12,6 @@ def config(tmp_path):
             'basedir': str(tmp_path),
             'temp_sd': str(tmp_path / 'sd'),
             'temp_images': str(tmp_path / 'images'),
-            'temp_done': str(tmp_path / 'done'),
-            'workflow_data': str(tmp_path / 'data'),
         },
         'workflow': {'batch_limit': 1},
         'culling': {

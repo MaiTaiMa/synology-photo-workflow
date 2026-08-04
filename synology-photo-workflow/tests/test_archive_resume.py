@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_archive_resume.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft sichere Archivwiederaufnahme ohne neues ZIP und Blockade bei verändertem Archiv.
-SICHERHEIT: Wiederaufnahme validiert stets das vorhandene Archiv und löscht nur nachweislich archivierte Quellen.
+"""tests/test_archive_resume.py
+
+Spezifikation v10.2 - AP1
 """
 import pytest
 from app.archives import archive_unneeded, resume_archive

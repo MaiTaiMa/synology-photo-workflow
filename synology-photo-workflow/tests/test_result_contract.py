@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_result_contract.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft kanonische Entscheidungszähler, Statusaggregation und Phase-2-ZIP-Konfliktweitergabe.
-SICHERHEIT: Ergebnisdaten sind vollständig, aber enthalten keine Bildbytes oder biometrischen Vektoren.
+"""tests/test_result_contract.py
+
+Spezifikation v10.2 - AP2
 """
 from app.result_contract import decision_counts, phase2_result, status_summary
 

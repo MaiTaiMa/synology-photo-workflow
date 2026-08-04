@@ -1,9 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_contracts.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-29
-Projektversion: 7.7.0
-Funktion: Synthetische Vertragstests für Score-Renormierung und Metrik-Margenpflicht.
+"""tests/test_contracts.py
+
+Spezifikation v10.2 - AP6
 """
 from app.culling import final_score
 from app.face_backend import MatchMetric, match_valid

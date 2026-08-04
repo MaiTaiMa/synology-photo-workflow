@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_runtime_recovery.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Budget-Grenze, Batch-Lock, Quarantäne-Audit und ausschließlich lesende Recovery-Inspektion.
-SICHERHEIT: Recovery verschiebt oder löscht keine Originale ohne expliziten, geprüften Transaktionszustand.
+"""tests/test_runtime_recovery.py
+
+Spezifikation v10.2 - AP3
 """
 import pytest
 from app.batch_state import state_path, write_state

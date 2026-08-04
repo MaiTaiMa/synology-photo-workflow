@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_planning.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft, dass Dry-Run plant ohne Batchordner oder Steuerdateien anzulegen.
-SICHERHEIT: Planung ist strikt lesend; produktive Batch-Schritte sind gelockt und zeitbudgetiert.
+"""tests/test_planning.py
+
+Spezifikation v10.2 - AP3
 """
 from app.planning import plan_phase1
 

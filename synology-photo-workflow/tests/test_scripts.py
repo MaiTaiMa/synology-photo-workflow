@@ -1,11 +1,7 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_scripts.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Existenz und Namenskonventionen aller Shell-Skripte.
-"""
+"""tests/test_scripts.py
 
+Spezifikation v10.2 - AP8
+"""
 from pathlib import Path
 
 

@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_culling_metadata.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Renormierung, unbekannte Scores, Seriennachvollziehbarkeit und sichere Metadatentags.
-SICHERHEIT: Bildanalyse ist optional, lokal und darf keine Originale verändern.
+"""tests/test_culling_metadata.py
+
+Spezifikation v10.2 - AP6, AP7
 """
 from app.culling import apply_series, final_score, stars
 from app.metadata import build_tags

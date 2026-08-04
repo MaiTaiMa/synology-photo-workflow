@@ -1,13 +1,8 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_face_adapter_yunet_sface_cpu_v77.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft den optionalen YuNet/SFace-CPU-Adapter auf defensive Diagnose und deaktivierten Standardzustand.
-SICHERHEIT: Ohne Modelle oder OpenCV-Face-Module darf das Backend nicht als bereit gelten.
+"""tests/test_face_adapter_yunet_sface_cpu.py
+
+Spezifikation v10.2 - AP6
 """
 from pathlib import Path
-
 from app.face_adapter_yunet_sface_cpu import YuNetSFaceCPUAdapter
 
 

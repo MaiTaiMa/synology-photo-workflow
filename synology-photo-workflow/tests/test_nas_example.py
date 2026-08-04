@@ -1,11 +1,7 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_nas_example.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft die vollständige NAS-Beispielverzeichnisstruktur auf Vollständigkeit.
-"""
+"""tests/test_nas_example.py
 
+Spezifikation v10.2 - AP8
+"""
 from pathlib import Path
 
 

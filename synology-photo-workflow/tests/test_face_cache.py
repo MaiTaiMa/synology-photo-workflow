@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_face_cache.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft aktive Referenzen, Cache-Fingerprint und das Verbot persistierter Vektoren.
-SICHERHEIT: Der Referenzcache speichert keine Roh-Embeddings und aktiviert keine Person ohne explizite Referenzauswahl.
+"""tests/test_face_cache.py
+
+Spezifikation v10.2 - AP7
 """
 from pathlib import Path
 from app.face_backend import FaceBackendDiagnosis, MatchMetric

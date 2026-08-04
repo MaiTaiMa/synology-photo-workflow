@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_runtime_config.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Alias-Konflikte, vollständige Automatikgates und den Lock-Eigentümerschutz.
-SICHERHEIT: Konfigurations- und Lockfehler stoppen vor jeder produktiven Mutation.
+"""tests/test_runtime_config.py
+
+Spezifikation v10.2 - AP5
 """
 import pytest
 from app.configuration import load_config

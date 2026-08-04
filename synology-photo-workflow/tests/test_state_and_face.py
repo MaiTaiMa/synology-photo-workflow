@@ -1,9 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_state_and_face.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-29
-Projektversion: 7.7.0
-Funktion: Prüfung des vorwärtigen Zustandsautomaten und Face-Metrikvertrags.
+"""tests/test_state_and_face.py
+
+Spezifikation v10.2 - AP2, AP6
 """
 import pytest
 from app.batch_state import write_state

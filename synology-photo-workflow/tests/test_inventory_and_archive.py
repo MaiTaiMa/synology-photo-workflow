@@ -1,9 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_inventory_and_archive.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-29
-Projektversion: 7.7.0
-Funktion: Prüfung exakter Paarbildung, ZIP-Sicherheit und ARW-Schutz.
+"""tests/test_inventory_and_archive.py
+
+Spezifikation v10.2 - AP1, AP4
 """
 import zipfile
 import pytest

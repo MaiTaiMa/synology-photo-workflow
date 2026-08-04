@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_security_core.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Regressionstests für atomare Steuerdaten, Archivhashes, Kollisionen und Löschjournal.
-SICHERHEIT: Originale werden nur durch verifizierte Transaktionen verändert.
+"""tests/test_security_core.py
+
+Spezifikation v10.2 - AP1
 """
 from pathlib import Path
 import pytest
@@ -14,7 +10,7 @@ from app.safety import SafetyError, atomic_json, read_control_json, validate_zip
 
 def payload():
     now = utcnow()
-    return {'schema_version': 1, 'created_at': now, 'updated_at': now, 'producer_version': '7.7.0', 'batch_id': 'b'}
+    return {'schema_version': 1, 'created_at': now, 'updated_at': now, 'producer_version': '7.8.0', 'batch_id': 'b'}
 
 
 def test_control_record_requires_schema_fields(tmp_path):

@@ -1,11 +1,7 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_configuration.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Ladeverhalten, Aliasmigrationen und Pfadvalidierung der Konfiguration.
-"""
+"""tests/test_configuration.py
 
+Spezifikation v10.2 - AP5
+"""
 from pathlib import Path
 
 

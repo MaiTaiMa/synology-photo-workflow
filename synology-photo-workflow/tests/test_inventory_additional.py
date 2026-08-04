@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_inventory_additional.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Batchinventar, Symlink-Abwehr, aktive-JPG-Regel und Basename-Mehrdeutigkeit.
-SICHERHEIT: Keine Mutation bei unvollständigem oder widersprüchlichem Inventar.
+"""tests/test_inventory_additional.py
+
+Spezifikation v10.2 - AP4
 """
 from pathlib import Path
 import pytest

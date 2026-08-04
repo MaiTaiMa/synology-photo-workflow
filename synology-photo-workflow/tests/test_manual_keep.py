@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_manual_keep.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Mehrkandidaten-Bestmatch, Marge und Nichtbewegung bei unsicherer Zuordnung.
-SICHERHEIT: Manual Keep bleibt konservativ; keine Datei wird ohne eindeutigen Vergleich verschoben.
+"""tests/test_manual_keep.py
+
+Spezifikation v10.2 - AP8
 """
 from app.manual_keep import process_inbox
 

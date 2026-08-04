@@ -1,10 +1,6 @@
-"""Projekt: Synology Photo Workflow
-Datei: tests/test_face_contract.py
-Mitentwickler: MaiTai
-Erstellt: 2026-07-30
-Projektversion: 7.7.0
-Funktion: Prüft Registry, richtungsabhängige Metriken, Auswahlfingerprints und Unknown-Face-Schutz.
-SICHERHEIT: Modellwahl ist explizit; keine stillen Backend- oder Metrik-Fallbacks.
+"""tests/test_face_contract.py
+
+Spezifikation v10.2 - AP6, AP7
 """
 from app.face_backend import MatchMetric, cache_fingerprint, diagnose, match_valid
 from app.family_recognition import candidate_allowed, forbidden_unknown_artifact, selection_fingerprint
