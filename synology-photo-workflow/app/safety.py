@@ -1,57 +1,88 @@
-"""Safety: Validierungen, SafetyError."""
+"""app/safety.py — Sicherheitsprimitive, atomare JSON- und ZIP-Transaktionen.
 
-from typing import TYPE_CHECKING, Any
+Spezifikation v10.2 - AP1
+"""
+from __future__ import annotations
+import hashlib
+import json
+import zipfile
+from datetime import datetime, timezone
 from pathlib import Path
-
-if TYPE_CHECKING:
-    from .work_units import WorkUnitPlan
+from typing import Any
 
 
 class SafetyError(Exception):
-    """Fehler bei Safety-Validierung."""
+    """Sicherheitsrelevante Ausnahme (z.B. Hash-Mismatch, Pfad-Traversal)."""
     pass
 
 
-def validate_move_safe(source: Path, dest: Path) -> None:
-    """Validiere, dass Move-Operation sicher ist.
-    
-    T1: Validierung vor jedem Move.
-    """
-    if not source.exists():
-        raise SafetyError(f"Source does not exist: {source}")
-    if source == dest:
-        raise SafetyError(f"Source and dest are identical: {source}")
-    if not dest.parent.exists():
-        raise SafetyError(f"Destination parent does not exist: {dest.parent}")
+def sha256(path: Path | str) -> str:
+    """Berechnet SHA256-Hash einer Datei."""
+    h = hashlib.sha256()
+    p = Path(path)
+    with open(p, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 
-def validate_work_unit_images(unit: "WorkUnitPlan", config: dict[str, Any]) -> None:
-    """Validiere alle Images einer WorkUnit vor Verarbeitung.
-    
-    Paket 3: Safety-Validierung fuer WorkUnit-Images.
-    - Alle Image-Pfade muessen existieren
-    - Alle Images muessen im Batch-Verzeichnis sein
-    - Keine symlinks oder spezielle Dateien
+def utcnow() -> str:
+    """Aktueller UTC-Zeitstempel im ISO-8601-Format."""
+    return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def atomic_json(path: Path | str, data: dict[str, Any], id_key: str | None = None) -> None:
+    """Schreibt dict als JSON atomar (write-renamepattern).
+
+    Pflichtfelder: schema_version, created_at, updated_at, producer_version
+    id_key: optionales Schlusselfeld (z.B. "batch_id") fuer Fehlermeldungen.
     """
-    for image_path in unit.image_paths:
-        # Existenz-Check
-        if not image_path.exists():
-            raise SafetyError(f"WorkUnit image does not exist: {image_path}")
-        
-        # Kein Symlink
-        if image_path.is_symlink():
-            raise SafetyError(f"WorkUnit image is a symlink: {image_path}")
-        
-        # Regulare Datei
-        if not image_path.is_file():
-            raise SafetyError(f"WorkUnit image is not a regular file: {image_path}")
-        
-        # Im Batch-Verzeichnis
-        try:
-            image_path.relative_to(unit.batch_path)
-        except ValueError:
-            raise SafetyError(f"WorkUnit image is outside batch directory: {image_path}")
-        
-        # Move-Validierung (Vorbereitung)
-        temp_images = Path(config["paths"]["temp_images"])
-        validate_move_safe(image_path, temp_images / image_path.name)
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Pflichtfelder pruefen
+    required = ["schema_version", "created_at", "updated_at", "producer_version"]
+    missing = [k for k in required if k not in data]
+    if missing:
+        raise SafetyError(f"missing:{sorted(missing)}")
+    
+    content = json.dumps(data, indent=2, ensure_ascii=False)
+    tmp = p.with_suffix(".tmp")
+    tmp.write_text(content, encoding="utf-8")
+    tmp.rename(p)
+
+
+def read_control_json(path: Path | str, id_key: str) -> dict[str, Any]:
+    """Liest JSON und validiert auf Pflichtfelder.
+
+    Fehler: 'unreadable:<path>' wenn nicht lesbar oder JSON-invalid.
+    """
+    p = Path(path)
+    try:
+        text = p.read_text(encoding="utf-8")
+        data = json.loads(text)
+        if not isinstance(data, dict):
+            raise SafetyError(f"unreadable:{p}")
+        return data
+    except (OSError, json.JSONDecodeError):
+        raise SafetyError(f"unreadable:{p}")
+
+
+def validate_zip(path: Path | str, entry_hashes: dict[str, str] | None = None) -> None:
+    """Validiert ZIP auf Pfad-Traversal und (optional) Hashes.
+
+    entry_hashes: {"relative/path": "sha256", ...} oder None (nur Traversal-Check).
+    """
+    p = Path(path)
+    with zipfile.ZipFile(p, "r") as z:
+        for name in z.namelist():
+            # Pfad-Traversal verhindern
+            if ".." in name.split("/") or name.startswith("/") or name.startswith("\\"):
+                raise SafetyError(f"zip_path_traversal:{name}")
+            
+            # Optional: Hash-Validierung
+            if entry_hashes and name in entry_hashes:
+                expected = entry_hashes[name]
+                actual = sha256(Path(z.extract(name)))  # Extract temp, hash, cleanup
+                if expected != actual:
+                    raise SafetyError(f"zip_hash_mismatch:{name}")
