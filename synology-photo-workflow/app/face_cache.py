@@ -1,20 +1,61 @@
-"""Face-Cache: Manifest."""
+"""app/face_cache.py — Cache-Plan, Cache-Manifest.
 
-from .result_contract import atomic_json_write
-from . import VERSION
+Spezifikation v10.2 - AP7
+"""
+from __future__ import annotations
 from pathlib import Path
-from datetime import datetime, timezone
 from typing import Any
 
+from .face_backend import FaceBackendDiagnosis
+from .safety import atomic_json, utcnow, sha256
 
-def write_cache_manifest(workflow_data: Path, faces: list[dict[str, Any]]) -> dict[str, Any]:
-    """Schreibe Face-Cache-Manifest atomar."""
+
+def rebuild_plan(
+    workflow_data: Path | str,
+    person_slug: str,
+    selection: dict[str, Any],
+    diagnosis: FaceBackendDiagnosis,
+) -> dict[str, Any]:
+    """Erstellt Cache-Plan aus aktiven Referenzen."""
+    ref_dir = Path(workflow_data) / "faces" / "reference" / person_slug
+    active_refs = [
+        f for f in selection.get("files", [])
+        if f.get("status") == "active" and "reference/" in f.get("relative_path", "")
+    ]
+    
+    return {
+        "schema_version": 1,
+        "person_slug": person_slug,
+        "reference_count": len(active_refs),
+        "status": "ready" if diagnosis.ready else "not_ready",
+        "backend_diagnosis": {
+            "ready": diagnosis.ready,
+            "backend_id": diagnosis.backend_id,
+            "message": diagnosis.message,
+        },
+    }
+
+
+def write_cache_manifest(
+    cache_path: Path | str,
+    plan: dict[str, Any],
+    diagnosis: FaceBackendDiagnosis,
+    vectors: list[Any],
+) -> None:
+    """Schreibt Cache-Manifest (ohne Vektoren)."""
+    from . import VERSION
     data = {
         "schema_version": 1,
+        "created_at": utcnow(),
+        "updated_at": utcnow(),
         "producer_version": VERSION,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "faces": faces,
+        "cache_fingerprint": plan.get("person_slug", "unknown"),
+        "plan": plan,
+        "vector_storage": "none",  # Vektoren niemals persistent
+        "backend_diagnosis": {
+            "ready": diagnosis.ready,
+            "backend_id": diagnosis.backend_id,
+            "message": diagnosis.message,
+        },
     }
-    manifest_path = workflow_data / "runtime" / "face_cache" / "manifest.json"
-    atomic_json_write(str(manifest_path), data)
-    return data
+    atomic_json(cache_path, data, "cache_fingerprint")
