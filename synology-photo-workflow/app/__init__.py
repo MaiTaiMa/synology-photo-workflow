@@ -1,6 +1,6 @@
-"""Synology Photo Workflow."""
+"""Synology Photo Workflow — App-Paket.
 
-VERSION = "7.9.0"
-CONTROL_FILE_VERSION = 1
+Projektversion: 7.8.0 (AP1-AP10 komplett)
+"""
 
-__all__ = ["VERSION", "CONTROL_FILE_VERSION"]
+VERSION = "7.8.0"
