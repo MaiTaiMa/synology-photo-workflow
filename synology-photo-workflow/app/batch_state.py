@@ -1,108 +1,65 @@
-"""Batch/WorkUnit-State: JSON-State-Machine, Checkpoints, Recovery."""
+"""app/batch_state.py — Batch-Zustandsautomat, State-Dateien.
 
-from typing import TYPE_CHECKING, Any
+Spezifikation v10.2 - AP2
+"""
+from __future__ import annotations
 from pathlib import Path
-import json
-import shutil
+from typing import Any
 
-if TYPE_CHECKING:
-    from .work_units import WorkUnitPlan
-    from .safety import validate_move_safe
+from .safety import atomic_json, utcnow, SafetyError
 
 
-def _state_file_path(batch_path: Path) -> Path:
-    """Pfad zur State-JSON-Datei fuer einen Batch."""
-    return batch_path.parent / f"{batch_path.name}.state.json"
+_PHASE_ORDER = [
+    "phase1_running",
+    "phase1_completed",
+    "phase2_reviewing",
+    "phase2_archiving",
+    "phase2_completed",
+]
 
 
-def _work_unit_state_file_path(unit: "WorkUnitPlan") -> Path:
-    """Pfad zur State-JSON-Datei fuer eine WorkUnit."""
-    # WorkUnit-State wird im Batch-Verzeichnis gespeichert
-    return unit.batch_path / f"work_unit_{unit.unit_id}.state.json"
+def state_path(basedir: Path | str, batch_id: str) -> Path:
+    """State-Pfad: basedir/batch_id.state.json"""
+    return Path(basedir) / f"{batch_id}.state.json"
 
 
-def write_state(batch_path: Path, phase: str, state: str, metadata: dict[str, Any] | None = None) -> None:
-    """Schreibe Batch-State in JSON-Datei."""
-    state_file = _state_file_path(batch_path)
-    data = {
-        "batch_name": batch_path.name,
-        "phase": phase,
-        "state": state,
-        "metadata": metadata or {}
-    }
-    state_file.write_text(json.dumps(data, indent=2))
-
-
-def load_state(batch_path: Path) -> dict[str, Any]:
-    """Lade Batch-State aus JSON-Datei."""
-    state_file = _state_file_path(batch_path)
-    if not state_file.exists():
-        return {"state": "new", "phase": None, "metadata": {}}
-    return json.loads(state_file.read_text())
-
-
-def write_work_unit_state(
-    unit: "WorkUnitPlan",
-    state: str,
-    phase: str = "phase1",
-    image_path: str | None = None,
-    pending_mutation: dict[str, Any] | None = None,
+def write_state(
+    path: Path | str,
+    batch_id: str,
+    phase: str,
+    status: str = "running",
+    pause_reason: str | None = None,
 ) -> None:
-    """Schreibe WorkUnit-State in JSON-Datei.
+    """Schreibt State atomar. Nur Vorwaerts-Transitionen erlaubt."""
+    p = Path(path)
     
-    Paket 2: Checkpoint nach jedem Bild/Operation.
-    """
-    state_file = _work_unit_state_file_path(unit)
+    # Bestehenden State lesen (falls vorhanden)
+    if p.exists():
+        try:
+            existing = json.loads(p.read_text(encoding="utf-8"))
+            old_phase = existing.get("phase", "")
+            if old_phase in _PHASE_ORDER and phase in _PHASE_ORDER:
+                if _PHASE_ORDER.index(phase) < _PHASE_ORDER.index(old_phase):
+                    raise ValueError(f"state_backwards:{old_phase} -> {phase}")
+        except (json.JSONDecodeError, OSError):
+            pass
+    
+    now = utcnow()
     data = {
-        "unit_id": unit.unit_id,
-        "batch_name": unit.batch_path.name,
+        "schema_version": 1,
+        "created_at": now,
+        "updated_at": now,
+        "producer_version": "7.8.0",
+        "batch_id": batch_id,
         "phase": phase,
-        "state": state,
-        "image_path": image_path,
-        "pending_mutation": pending_mutation,
-        "metadata": {
-            "total_images": len(unit.image_paths),
-            "completed_images": unit.image_paths.index(Path(image_path)) + 1 if image_path and image_path in [str(p) for p in unit.image_paths] else 0
-        }
+        "status": status,
     }
-    state_file.write_text(json.dumps(data, indent=2))
+    if pause_reason:
+        data["pause_reason"] = pause_reason
+    
+    atomic_json(p, data, "batch_id")
 
 
-def load_work_unit_state(unit: "WorkUnitPlan") -> dict[str, Any]:
-    """Lade WorkUnit-State aus JSON-Datei fuer Resume.
-    
-    Paket 2: Resume-Logik - lade letzten Checkpoint.
-    """
-    state_file = _work_unit_state_file_path(unit)
-    if not state_file.exists():
-        return {"state": "new", "phase": None, "image_path": None, "pending_mutation": None}
-    return json.loads(state_file.read_text())
-
-
-def recover_pending_mutation(unit: "WorkUnitPlan", state: dict[str, Any], config: dict[str, Any]) -> None:
-    """Stelle pending_mutation wieder her (Recovery nach Crash).
-    
-    Paket 4: Recovery-Logik - fuehre unterbrochene Move-Operation nach.
-    """
-    pending = state.get("pending_mutation")
-    if not pending:
-        return
-    
-    source = Path(pending["source"])
-    dest = Path(pending["dest"])
-    
-    # Nur ausfuehren, wenn Source noch existiert (Crash waehrend Move)
-    if source.exists():
-        # Safety-Check vor Recovery-Move
-        if not dest.parent.exists():
-            dest.parent.mkdir(parents=True, exist_ok=True)
-        
-        # Recovery-Move ausfuehren
-        shutil.move(str(source), str(dest))
-        
-        # State auf "completed" setzen nach erfolgreichem Recovery
-        write_work_unit_state(
-            unit, "completed",
-            image_path=pending.get("image_path"),
-            pending_mutation=None
-        )
+def read_state(path: Path | str) -> dict[str, Any]:
+    """Liest State-Datei."""
+    return json.loads(Path(path).read_text(encoding="utf-8"))
