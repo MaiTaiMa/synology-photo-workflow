@@ -16,6 +16,7 @@ import hashlib
 import json
 import tempfile
 import zipfile
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -32,6 +33,14 @@ _TIMESTAMP_FIELDS: frozenset[str] = frozenset({"created_at", "updated_at", "time
 
 class SafetyError(Exception):
     """Fehler bei Safety-Validierung."""
+
+
+@dataclass
+class SafetyResult:
+    """Ergebnis einer Safety-Prüfung mit erlaubter/nicht erlaubter Entscheidung."""
+
+    allowed: bool
+    reason: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -220,11 +229,45 @@ def within(base: str | Path, path: str | Path) -> bool:
     Beide Pfade werden mit resolve() normalisiert, bevor der Vergleich
     stattfindet. Symlinks werden dadurch aufgelöst; '..' wird eliminiert.
     """
+    return is_within_base(Path(path), Path(base))
+
+
+def is_within_base(path: Path, base_dir: Path) -> bool:
+    """Prüft kanonisch, ob ein Pfad innerhalb der erlaubten Basis liegt."""
     try:
-        Path(path).resolve().relative_to(Path(base).resolve())
+        path.resolve().relative_to(base_dir.resolve())
         return True
-    except ValueError:
+    except (OSError, ValueError):
         return False
+
+
+def block_traversal(path: str) -> SafetyResult:
+    """Blockiert unsichere Pfadangaben wie '..'-Traversal und Nullbytes."""
+    if not path or path.strip() == "":
+        return SafetyResult(False, "path_empty")
+    normalized = path.replace("\\", "/")
+    if "\x00" in normalized:
+        return SafetyResult(False, "path_nullbyte")
+    if ".." in [segment for segment in normalized.split("/") if segment]:
+        return SafetyResult(False, "path_traversal")
+    return SafetyResult(True, None)
+
+
+def validate_path(path: str, base_dir: str) -> SafetyResult:
+    """Validiert einen Pfad inklusive Basisgrenze und Symlink-Ausbruchsschutz."""
+    traversal = block_traversal(path)
+    if not traversal.allowed:
+        return traversal
+
+    base = Path(base_dir).expanduser().resolve(strict=False)
+    candidate = Path(path).expanduser()
+    if not candidate.is_absolute():
+        candidate = base / candidate
+
+    resolved = candidate.resolve(strict=False)
+    if not is_within_base(resolved, base):
+        return SafetyResult(False, "path_outside_base")
+    return SafetyResult(True, None)
 
 
 def require_within(base: str | Path, path: str | Path) -> None:
