@@ -7,6 +7,12 @@
 - **`app/safety.py`**: `sha256`, `canonical_hash`, `utcnow`, `atomic_json` (mit
   Pflichtfeldprüfung gem. 00AP.md §8.3), `read_control_json`, `safe_zip`,
   `validate_zip`, `within`, `require_within` ergänzt.
+- **`app/configuration.py`**: 01AP-konforme Dataclass-Konfiguration,
+  `validate_schema()`, `get_fingerprint()`, Secret-Prüfung,
+  Modellpfad-/Hash-Validierung und kompatibler Mapping-Zugriff ergänzt.
+- **`app/safety.py`**: 01AP-Safety-Vertrag um `SafetyResult`, `validate_path()`,
+  `is_within_base()` und `block_traversal()` erweitert; `require_within()`
+  gibt nun den validierten Pfad zurück.
 - **`app/result_contract.py`**: `atomic_json_write` (ohne Pflichtfeldprüfung, für
   interne Artefakte) und `FileManifest`-Dataclass ergänzt.
 - **`app/batch_state.py`**: Kanonisches Schema: `state_path`, `write_state` (mit
@@ -27,6 +33,11 @@
   Embedding-Persistenz, vector_storage=none).
 - **`NAS_EXAMPLE/TEMP/`**: Vollständige NAS-Verzeichnisstruktur mit README.md
   erstellt.
+- **`config/config.yaml`** und **`config/config.example.yaml`**: `publish_root`,
+  `finalization`, `reference_pools` sowie dokumentierte Modell-Hash-Felder
+  ergänzt.
+- **`tests/test_configuration.py`**, **`tests/test_safety.py`** und
+  **`tests/conftest.py`**: 01AP-Tests und kompatible Standard-Config ergänzt.
 
 ## 7.8.0 — 2026-07-31
 
