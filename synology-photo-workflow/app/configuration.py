@@ -307,6 +307,8 @@ def _validate_culling(culling: Mapping[str, Any]) -> None:
         'final_component_weights',
     )
     _reject_unknown(weights, {'base_score', 'eye_score', 'personal_score', 'family_score'}, 'final_component_weights')
+    if not all(isinstance(value, int | float) for value in weights.values()):
+        raise ValueError('CONFIGINVALID final_component_weights')
     if any(value < 0 for value in weights.values()) or abs(sum(weights.values()) - 1) > 1e-9:
         raise ValueError('CONFIGINVALID final_component_weights')
     bands = culling['star_rating_bands']
@@ -436,7 +438,7 @@ def _validate_finalization(config_dict: dict[str, Any]) -> None:
 
     finalization = config_dict['finalization']
     publish = finalization.get('publish_to_synology_photos', {})
-    if not finalization.get('enabled') and not publish.get('enabled'):
+    if not (finalization.get('enabled') or publish.get('enabled')):
         return
     paths = config_dict['paths']
     publish_root = paths.get('publish_root')
@@ -463,6 +465,7 @@ def validate_schema(config_dict: dict[str, Any]) -> None:
 
     if not isinstance(config_dict, dict):
         raise ValueError('CONFIGINVALID config must be a mapping')  # noqa: TRY004
+    _migrate_aliases(config_dict)
     _reject_unknown(config_dict, _ALLOWED_TOP_LEVEL, 'top-level')
     _require(config_dict, _REQUIRED_TOP_LEVEL, 'sections')
     if 'face' not in config_dict and 'family_recognition' not in config_dict:
@@ -541,8 +544,8 @@ def load_config(path: str | Path) -> Config:
     _migrate_aliases(config_dict)
     _normalize_paths(config_dict)
     validate_schema(config_dict)
-    fingerprint = get_fingerprint(config_dict)
-    return _build_config(config_dict, fingerprint)
+    config_fingerprint = get_fingerprint(config_dict)
+    return _build_config(config_dict, config_fingerprint)
 
 
 def validate_config(config: dict[str, Any]) -> None:

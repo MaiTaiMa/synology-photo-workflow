@@ -61,8 +61,10 @@ def test_is_within_base_blocks_symlink_to_outside(tmp_path):
 
 def test_publish_root_validation_is_separate(tmp_path):
     publish_root = tmp_path / 'publish'
+    album = publish_root / 'album'
     publish_root.mkdir()
-    allowed = validate_path(str(publish_root / 'album'), str(publish_root))
+    album.mkdir()
+    allowed = validate_path(str(album), str(publish_root))
     blocked = validate_path(str(tmp_path / 'foreign' / 'album'), str(publish_root))
 
     assert allowed.allowed is True
