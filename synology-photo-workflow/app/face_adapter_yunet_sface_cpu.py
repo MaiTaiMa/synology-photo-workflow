@@ -8,11 +8,18 @@ SICHERHEIT: Ohne explizite Modellpfade und installierte OpenCV-Contrib-Komponent
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Sequence
 
-from .face_backend import FaceBackendDiagnosis, FaceBackendProtocol, FaceEmbedding, FaceMatch, MatchMetric, match_valid
+from .face_backend import (
+    FaceBackendDiagnosis,
+    FaceBackendProtocol,
+    FaceEmbedding,
+    FaceMatch,
+    MatchMetric,
+    match_valid,
+)
 
 try:
     import cv2  # type: ignore

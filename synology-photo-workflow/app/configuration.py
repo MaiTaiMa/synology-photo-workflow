@@ -11,7 +11,9 @@ from __future__ import annotations
 import copy
 from pathlib import Path
 from typing import Any
+
 import yaml
+
 from .safety import canonical_hash, within
 
 ALLOWED_TOP = {'paths', 'workflow', 'culling', 'phase2', 'metadata', 'family_recognition', 'automation', 'calibration', 'extensions'}

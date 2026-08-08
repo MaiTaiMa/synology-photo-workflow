@@ -12,7 +12,8 @@ HINWEIS: Neu, noch nicht von Face-/CLIP-Adaptern konsumiert (siehe FEATURE_BRANC
 from __future__ import annotations
 
 import multiprocessing
-from typing import Any, Callable, Iterable
+from collections.abc import Callable, Iterable
+from typing import Any
 
 from .model_diagnostics import ModelDiagnosis
 
@@ -24,7 +25,7 @@ class InferenceRuntime:
         self.max_worker_ram_mb = max_worker_ram_mb
         self._pool = None
 
-    def __enter__(self) -> 'InferenceRuntime':
+    def __enter__(self) -> InferenceRuntime:
         if self.workers > 1:
             context = multiprocessing.get_context('spawn')
             self._pool = context.Pool(processes=self.workers)

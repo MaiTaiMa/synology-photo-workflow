@@ -8,8 +8,8 @@ SICHERHEIT: Modellwahl ist explizit; keine stillen Backend- oder Metrik-Fallback
 """
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
+
 from .safety import SafetyError, canonical_hash
 
 
