@@ -111,3 +111,40 @@ def test_publish_root_and_target_folder_are_validated_when_finalization_enabled(
     config = load_config(config_path)
 
     assert config.finalization['publish_to_synology_photos']['target_folder'].endswith('album')
+
+
+def test_finalization_rejects_target_folder_outside_publish_root(tmp_path):
+    publish_root = tmp_path / 'PUBLISH_ROOT'
+    publish_root.mkdir(parents=True)
+    outside = tmp_path / 'outside' / 'album'
+    config_path = write_config(
+        tmp_path,
+        finalization={
+            'enabled': True,
+            'publish_to_synology_photos': {
+                'enabled': True,
+                'target_folder': str(outside),
+            },
+        },
+    )
+
+    with pytest.raises(ValueError, match='target_folder invalid'):
+        load_config(config_path)
+
+
+def test_finalization_requires_publish_root_when_enabled(tmp_path):
+    config_path = write_config(
+        tmp_path,
+        finalization={
+            'enabled': True,
+            'publish_to_synology_photos': {
+                'enabled': True,
+            },
+        },
+    )
+    payload = _read_yaml(config_path)
+    payload['paths'].pop('publish_root')
+    config_path.write_text(yaml.safe_dump(payload, sort_keys=False), encoding='utf-8')
+
+    with pytest.raises(ValueError, match='publish_root missing'):
+        load_config(config_path)

@@ -49,6 +49,7 @@ _REQUIRED_TOP_LEVEL = {
     'paths',
     'workflow',
     'culling',
+    'face',
     'finalization',
     'reference_pools',
 }
@@ -475,11 +476,8 @@ def validate_schema(config_dict: dict[str, Any]) -> None:
 
     if not isinstance(config_dict, dict):
         raise ValueError('CONFIGINVALID config must be a mapping')  # noqa: TRY004
-    _migrate_aliases(config_dict)
     _reject_unknown(config_dict, _ALLOWED_TOP_LEVEL, 'top-level')
     _require(config_dict, _REQUIRED_TOP_LEVEL, 'sections')
-    if 'face' not in config_dict and 'family_recognition' not in config_dict:
-        raise ValueError('CONFIGINVALID missing sections:["face"]')
     if (
         'face' in config_dict
         and 'family_recognition' in config_dict
@@ -551,6 +549,7 @@ def load_config(path: str | Path) -> Config:
     if not isinstance(raw, dict):
         raise ValueError('CONFIGINVALID config must be a mapping')  # noqa: TRY004
     config_dict = copy.deepcopy(raw)
+    _migrate_aliases(config_dict)
     _normalize_paths(config_dict)
     validate_schema(config_dict)
     config_fingerprint = get_fingerprint(config_dict)
@@ -560,7 +559,9 @@ def load_config(path: str | Path) -> Config:
 def validate_config(config: dict[str, Any]) -> None:
     """Kompatibilitaetsalias fuer bestehenden Code und Tests."""
 
-    validate_schema(config)
+    candidate = copy.deepcopy(config)
+    _migrate_aliases(candidate)
+    validate_schema(candidate)
 
 
 def validate_paths(config: dict[str, Any]) -> None:
