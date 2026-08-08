@@ -141,9 +141,12 @@ def load_config(path: str | Path) -> dict[str, Any]:
     finalization = data.get('finalization', {})
     if finalization.get('enabled'):
         publish_root = data['paths'].get('publish_root')
+        target_folder = finalization.get('target_folder')
         if not publish_root:
             raise ValueError('CONFIGINVALID missing paths.publish_root for finalization')
-        if not within(publish_root, Path(publish_root) / finalization.get('target_folder', '')):
+        if not target_folder:
+            raise ValueError('CONFIGINVALID missing finalization.target_folder')
+        if not within(publish_root, Path(publish_root) / target_folder):
             raise ValueError('CONFIGINVALID finalization.target_folder outside publish_root')
     return data
 
@@ -159,9 +162,7 @@ def validate_paths(config: dict[str, Any]) -> None:
 def validate_config(config: dict[str, Any]) -> None:
     """Validiert Schlüssel, Wertebereiche und Sicherheitskombinationen vor Laufbeginn."""
     validate_schema(config)
-    _require(config['paths'], {'basedir', 'temp_sd', 'temp_images', 'temp_done', 'temp_error', 'workflow_data', 'manual_keep_inbox', 'manual_keep_used'}, 'paths')
     workflow = config['workflow']
-    _require(workflow, {'phase_execution', 'batch_limit', 'batch_sort', 'skip_incomplete_batches', 'max_run_hours', 'resume_incomplete_batches', 'dry_run'}, 'workflow')
     if workflow['phase_execution'] not in {'phase1_then_phase2', 'phase1_only', 'phase2_only'} or workflow['batch_sort'] != 'oldest_first' or not isinstance(workflow['batch_limit'], int) or workflow['batch_limit'] < 1:
         raise ValueError('CONFIGINVALID workflow')
     automation = config['automation']
