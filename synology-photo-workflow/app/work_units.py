@@ -1,9 +1,9 @@
 """WorkUnits: KI-Contract, Batch-Chunking, State, Resume, Recovery."""
 
-from .batch_state import load_state, load_work_unit_state
 from pathlib import Path
 from typing import Any, Literal
 
+from .batch_state import load_state
 
 BatchSort = Literal["oldest_first", "newest_first"]
 

@@ -11,8 +11,9 @@ HINWEIS: Neu, noch nicht von Adaptern konsumiert (siehe FEATURE_BRANCH_V7_9_0_TO
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .model_diagnostics import ModelDiagnosis, disabled
 from .safety import require_within, sha256

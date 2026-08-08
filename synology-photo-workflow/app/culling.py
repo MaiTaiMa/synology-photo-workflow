@@ -56,7 +56,7 @@ def technical_components(
 ) -> dict[str, float | None]:
     """Berechnet leichte CPU-Metriken und optionalen CLIP-personal_score; bei Fehler bleiben Werte None."""
     try:
-        from PIL import Image, ImageStat, ImageFilter
+        from PIL import Image, ImageFilter, ImageStat
         with Image.open(image) as source:
             preview = source.convert('RGB')
             preview.thumbnail((longest_edge, longest_edge))
