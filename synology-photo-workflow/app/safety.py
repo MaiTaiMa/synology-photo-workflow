@@ -191,12 +191,29 @@ def block_traversal(path: str) -> SafetyResult:
     return SafetyResult(True, None)
 
 
+def _canonical_path(path: Path) -> Path:
+    """Loest existierende Pfadanteile strikt auf und behaelt fehlende Suffixe bei."""
+
+    expanded = path.expanduser()
+    try:
+        return expanded.resolve(strict=True)
+    except FileNotFoundError:
+        existing_parent = expanded
+        missing_parts: list[str] = []
+        while not existing_parent.exists() and existing_parent != existing_parent.parent:
+            missing_parts.append(existing_parent.name)
+            existing_parent = existing_parent.parent
+        resolved_parent = existing_parent.resolve(strict=True)
+        suffix = list(reversed(missing_parts))
+        return resolved_parent.joinpath(*suffix)
+
+
 def is_within_base(path: Path, base_dir: Path) -> bool:
     """Prueft kanonisch, ob ein Pfad innerhalb der erlaubten Basis bleibt."""
 
     try:
-        resolved_base = base_dir.expanduser().resolve(strict=False)
-        resolved_path = path.expanduser().resolve(strict=False)
+        resolved_base = _canonical_path(base_dir)
+        resolved_path = _canonical_path(path)
         resolved_path.relative_to(resolved_base)
         return True
     except ValueError:
@@ -209,12 +226,12 @@ def validate_path(path: str, base_dir: str) -> SafetyResult:
     traversal = block_traversal(path)
     if not traversal.allowed:
         return traversal
-    base_path = Path(base_dir).expanduser().resolve(strict=False)
+    base_path = _canonical_path(Path(base_dir))
     candidate_path = Path(path).expanduser()
     if not candidate_path.is_absolute():
-        candidate_path = (base_path / candidate_path).resolve(strict=False)
+        candidate_path = _canonical_path(base_path / candidate_path)
     else:
-        candidate_path = candidate_path.resolve(strict=False)
+        candidate_path = _canonical_path(candidate_path)
     if not is_within_base(candidate_path, base_path):
         return SafetyResult(False, 'outside_base')
     return SafetyResult(True, None)

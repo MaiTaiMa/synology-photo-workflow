@@ -298,6 +298,16 @@ def _validate_paths(config_dict: dict[str, Any]) -> None:
 def _validate_culling(culling: Mapping[str, Any]) -> None:
     """Prueft 01AP-relevante Culling-Schwellen, Gewichte und Sternbaender."""
 
+    _require(
+        culling,
+        {
+            'keep_threshold',
+            'reject_threshold',
+            'final_component_weights',
+            'star_rating_bands',
+        },
+        'culling',
+    )
     if not 0 <= culling['reject_threshold'] < culling['keep_threshold'] <= 1:
         raise ValueError('CONFIGINVALID score thresholds')
     weights = culling['final_component_weights']
@@ -402,7 +412,7 @@ def _validate_models(config_dict: dict[str, Any]) -> None:
     paths = config_dict['paths']
     base_dir = Path(paths['basedir'])
     models_root = Path(paths['workflow_data']) / 'models'
-    if not is_within_base(models_root, Path(paths['workflow_data'])):
+    if not is_within_base(models_root, base_dir):
         raise ValueError('CONFIGINVALID workflow_data models root invalid')
 
     taste = config_dict['culling'].get('taste_model', {})
@@ -541,7 +551,6 @@ def load_config(path: str | Path) -> Config:
     if not isinstance(raw, dict):
         raise ValueError('CONFIGINVALID config must be a mapping')  # noqa: TRY004
     config_dict = copy.deepcopy(raw)
-    _migrate_aliases(config_dict)
     _normalize_paths(config_dict)
     validate_schema(config_dict)
     config_fingerprint = get_fingerprint(config_dict)
