@@ -23,7 +23,13 @@ from typing import Any
 
 import yaml
 
-from .safety import SafetyResult, is_within_base, sha256, validate_path
+from .safety import (
+    SafetyResult,
+    block_traversal,
+    is_within_base,
+    sha256,
+    validate_path,
+)
 
 _ALLOWED_TOP_LEVEL = {
     'paths',
@@ -295,6 +301,11 @@ def _validate_culling(culling: Mapping[str, Any]) -> None:
     if not 0 <= culling['reject_threshold'] < culling['keep_threshold'] <= 1:
         raise ValueError('CONFIGINVALID score thresholds')
     weights = culling['final_component_weights']
+    _require(
+        weights,
+        {'base_score', 'eye_score', 'personal_score', 'family_score'},
+        'final_component_weights',
+    )
     _reject_unknown(weights, {'base_score', 'eye_score', 'personal_score', 'family_score'}, 'final_component_weights')
     if any(value < 0 for value in weights.values()) or abs(sum(weights.values()) - 1) > 1e-9:
         raise ValueError('CONFIGINVALID final_component_weights')
@@ -432,9 +443,11 @@ def _validate_finalization(config_dict: dict[str, Any]) -> None:
     if not publish_root:
         raise ValueError('CONFIGINVALID publish_root missing')
     publish_root_path = Path(publish_root)
-    root_check = validate_path(str(publish_root_path), str(publish_root_path))
+    root_check = block_traversal(str(publish_root))
     if not root_check.allowed:
         raise ValueError(f'CONFIGINVALID publish_root invalid:{root_check.reason}')
+    if publish_root_path.exists() and publish_root_path.is_symlink():
+        raise ValueError('CONFIGINVALID publish_root invalid:symlink_root')
     target_folder = publish.get('target_folder')
     if not target_folder:
         raise ValueError('CONFIGINVALID finalization target_folder missing')
