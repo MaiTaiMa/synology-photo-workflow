@@ -9,6 +9,7 @@ SICHERHEIT: Keine Mutation bei unvollständigem oder widersprüchlichem Inventar
 from __future__ import annotations
 
 from pathlib import Path
+
 from .safety import SafetyError, canonical_hash, sha256
 
 IMG = {'.jpg', '.jpeg'}

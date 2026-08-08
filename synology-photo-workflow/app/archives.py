@@ -10,9 +10,18 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+
 from . import VERSION
 from .inventory import arw_bindings
-from .safety import SafetyError, atomic_json, read_control_json, safe_zip, sha256, utcnow, validate_zip
+from .safety import (
+    SafetyError,
+    atomic_json,
+    read_control_json,
+    safe_zip,
+    sha256,
+    utcnow,
+    validate_zip,
+)
 
 
 def _next_target(save: Path, stem: str) -> tuple[Path, str | None]:

@@ -13,14 +13,15 @@ import json
 import signal
 import sys
 from pathlib import Path
+
 from .calibration import rebuild
 from .configuration import fingerprint, load_config, public_config
 from .face_backend import diagnose
 from .locks import RunLock
 from .phases import phase1, phase2
-from .reporting import action, summary
-from .runtime import inspect_recovery
 from .planning import plan_phase1, plan_phase2
+from .reporting import summary
+from .runtime import inspect_recovery
 
 EXIT = {'success': 0, 'validation': 2, 'recoverable': 3, 'recovery_required': 4, 'configuration': 5, 'internal': 6}
 

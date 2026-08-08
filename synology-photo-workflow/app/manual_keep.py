@@ -9,8 +9,10 @@ SICHERHEIT: Manual Keep bleibt konservativ; keine Datei wird ohne eindeutigen Ve
 from __future__ import annotations
 
 import shutil
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
+
 from .safety import sha256
 
 Similarity = Callable[[Path, Path], float | None]
