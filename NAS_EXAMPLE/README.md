@@ -1,13 +1,13 @@
 <!--
 Projekt: Synology Photo Workflow
-Pfad: NAS_EXAMPLE
-Rolle: NAS_EXAMPLE
+Pfad: NAS_EXAMPLE/TEMP
+Rolle: TEMP
 Funktion: Beschreibt Zweck, zulässige Daten und klare Abgrenzung dieses Ordners.
 -->
 
-# NAS_EXAMPLE
+# TEMP
 
-Dieser Ordner gehört zur persistenten NAS-Beispielstruktur des Projekts und erfüllt eine klar abgegrenzte Rolle innerhalb des Workflows. Er speichert Daten oder Zustände, die von den benachbarten Bereichen logisch getrennt bleiben müssen, damit der Ablauf reproduzierbar und sicher bleibt. In diesem Ordner dürfen nur Inhalte liegen, die fachlich zu seiner beschriebenen Aufgabe passen, beispielsweise Zustände, Review-Artefakte oder Referenzen. Wenn eine Datei noch Eingangsdaten oder ein unfreigegebener Zwischenstand ist, gehört sie in den jeweils vorgelagerten Bereich, nicht hierher. Wenn eine Datei bereits freigegeben, geprüft oder als Laufzeitartefakt persistiert werden soll, muss sie in den dafür vorgesehenen Ordner des Workflows verschoben werden.
+Dieser Ordner ist der Arbeitsbereich des Workflows und bildet den persistenten Wurzelbereich für alle prozessnahen Daten. Er nimmt die Unterordner für Eingang, Review, Übergabe, Fehlerfälle und technische Laufzeitdaten auf. Hier entstehen keine Quellcodeartefakte, sondern ausschließlich Betriebsdaten, Manifeste, Summaries und Verzeichniszustände. Der Ordner ist die richtige Wahl, wenn Dateien vom Workflow verarbeitet, sortiert oder als Zustand dokumentiert werden sollen. Er darf nicht als Archiv für beliebige private Dateien verwendet werden; dafür sind die konkreten Unterordner oder externe Sicherungsorte vorgesehen.
 
 ## Abgrenzung
 
