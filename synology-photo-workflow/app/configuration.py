@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 from itertools import pairwise
 from pathlib import Path
 from typing import Any
@@ -61,7 +62,12 @@ def _assert_no_secrets(mapping: Any, trail: str = '') -> None:
         for key, value in mapping.items():
             key_l = str(key).lower()
             full = f'{trail}.{key}' if trail else str(key)
-            if any(token in key_l for token in ('password', 'passwd', 'secret', 'token', 'api_key', 'apikey', 'client_secret', 'access_key', 'session')) and value not in (None, '', False):
+            parts = tuple(part for part in re.split(r'[_\-.]+', key_l) if part)
+            is_sensitive = (
+                key_l in {'api_key', 'apikey', 'client_secret', 'access_key', 'session_token'}
+                or any(token in {'password', 'passwd', 'secret', 'token'} for token in parts)
+            )
+            if is_sensitive and value not in (None, '', False):
                 raise ValueError(f'CONFIGINVALID secrets_not_allowed:{full}')
             _assert_no_secrets(value, full)
     elif isinstance(mapping, list):

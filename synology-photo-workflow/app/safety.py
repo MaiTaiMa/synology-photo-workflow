@@ -235,9 +235,9 @@ def within(base: str | Path, path: str | Path) -> bool:
 def is_within_base(path: Path, base_dir: Path) -> bool:
     """Prüft kanonisch, ob ein Pfad innerhalb der erlaubten Basis liegt."""
     try:
-        path.resolve(strict=False).relative_to(base_dir.resolve(strict=False))
+        path.resolve().relative_to(base_dir.resolve())
         return True
-    except ValueError:
+    except (OSError, ValueError):
         return False
 
 
