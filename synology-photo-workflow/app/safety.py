@@ -267,9 +267,6 @@ def validate_path(path: str, base_dir: str) -> SafetyResult:
     resolved = candidate.resolve(strict=False)
     if not is_within_base(resolved, base):
         return SafetyResult(False, "path_outside_base")
-
-    if candidate.exists() and candidate.is_symlink() and not is_within_base(candidate.resolve(), base):
-        return SafetyResult(False, "symlink_outside_base")
     return SafetyResult(True, None)
 
 

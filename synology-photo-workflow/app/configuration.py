@@ -17,7 +17,7 @@ from typing import Any
 
 import yaml
 
-from .safety import within
+from .safety import block_traversal, within
 
 ALLOWED_TOP = {'paths', 'workflow', 'culling', 'phase2', 'metadata', 'family_recognition', 'automation', 'calibration', 'extensions', 'finalization'}
 BACKENDS = {'opencv_yunet_sface_cpu', 'onnx_face_cpu', 'onnx_face_cuda', 'face_recognition_dlib_cpu', 'insightface_onnx'}
@@ -146,6 +146,9 @@ def load_config(path: str | Path) -> dict[str, Any]:
             raise ValueError('CONFIGINVALID missing paths.publish_root for finalization')
         if not target_folder:
             raise ValueError('CONFIGINVALID missing finalization.target_folder')
+        traversal = block_traversal(str(target_folder))
+        if not traversal.allowed:
+            raise ValueError(f'CONFIGINVALID invalid finalization.target_folder:{traversal.reason}')
         if not within(publish_root, Path(publish_root) / target_folder):
             raise ValueError('CONFIGINVALID finalization.target_folder outside publish_root')
     return data
