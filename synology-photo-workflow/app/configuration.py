@@ -49,7 +49,7 @@ def _migrate_aliases(data: dict[str, Any]) -> None:
 def _reject_unknown(mapping: dict[str, Any], allowed: set[str], scope: str) -> None:
     unknown = set(mapping) - allowed
     if unknown:
-        raise ValueError(f'CONFIGINVALID unknown {scope} key:{sorted(unknown)}')
+        raise ValueError(f'CONFIGINVALID unknown {scope} keys: {sorted(unknown)}')
 
 
 def _is_hex_sha256(value: Any) -> bool:
@@ -117,7 +117,6 @@ def load_config(path: str | Path) -> dict[str, Any]:
     """Lädt YAML, migriert erlaubte Lese-Aliase und löst ausschließlich Pfade unter basedir auf."""
     data = yaml.safe_load(Path(path).read_text(encoding='utf-8')) or {}
     _migrate_aliases(data)
-    validate_schema(data)
     validate_config(data)
     base = Path(data['paths']['basedir']).expanduser().resolve()
     for key, value in list(data['paths'].items()):

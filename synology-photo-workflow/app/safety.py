@@ -248,6 +248,8 @@ def block_traversal(path: str) -> SafetyResult:
     normalized = path.replace("\\", "/")
     if "\x00" in normalized:
         return SafetyResult(False, "path_nullbyte")
+    if ".." in [segment for segment in normalized.split("/") if segment]:
+        return SafetyResult(False, "path_traversal")
     if ".." in Path(normalized).parts:
         return SafetyResult(False, "path_traversal")
     return SafetyResult(True, None)
